@@ -2,11 +2,7 @@ const mongoose = require('mongoose');
 
 // Define the Cinema schema
 const cinemaSchema = new mongoose.Schema({
-    cinemaID: {
-        type: String, // or Number depending on your needs
-        required: true
-    },
-    cinemaName: {
+    name: {
         type: String,
         required: true
     },
@@ -14,7 +10,11 @@ const cinemaSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-});
+},
+    {
+        timestamps: true, ///reatedAT, updatedAt
+    }
+);
 
 // Create a model from the schema
 const Cinema = mongoose.model('cinema', cinemaSchema);
