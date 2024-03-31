@@ -10,6 +10,8 @@ const { getAllDirector, postCreateADirector, putUpdateADirector, deleteADirector
 const { getAllActor, postCreateActor, putUpdateActor, deleteActor } = require('../controllers/actorController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerCustomer, loginCustomer } = require('../controllers/authController')
+const { verifyToken, verifyAdminAuth, verifyStaffAuth, verifyCustomerAuth } = require('../middleware/authMiddleware')
+
 
 routerAPI.get('/admin', getAllAdmin)
 routerAPI.post('/admin', postCreateAdmin)
@@ -26,7 +28,7 @@ routerAPI.post('/customer', postCreateCustomer)
 routerAPI.put('/customer', putUpdateCustomer)
 routerAPI.delete('/customer', deleteCustomer)
 
-routerAPI.get('/account', getAllAccount)
+routerAPI.get('/account', verifyAdminAuth, getAllAccount)
 routerAPI.post('/account', postCreateAccount)
 routerAPI.put('/account', putUpdateAccount)
 routerAPI.delete('/account', deleteAccount)

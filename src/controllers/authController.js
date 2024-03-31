@@ -38,7 +38,6 @@ const loginCustomer = async (req, res) => {
                 message: "Wrong username or password"
             });
         }
-
         // Login success!
         return res.status(200).json({
             errorCode: 0,

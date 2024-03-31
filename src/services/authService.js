@@ -1,7 +1,9 @@
 const { model } = require("mongoose");
 const bcrypt = require('bcryptjs')
 const Account = require('../models/account');
-const registerCustomerService = async (registerData) => {
+const jwt = require('jsonwebtoken')
+
+const registerCustomerService = async (registerData, defaultRole = 'customer') => {
     try {
         const salt = await bcrypt.genSalt(10)
         const hashed = await bcrypt.hash(registerData.password, salt)
@@ -10,7 +12,7 @@ const registerCustomerService = async (registerData) => {
         let account = await Account.create({
             username: registerData.username,
             password: hashed,
-            role: 'customer'
+            role: registerData.role || defaultRole
         })
         return account
     } catch (error) {
@@ -29,7 +31,16 @@ const loginCustomerService = async (username, password) => {
         if (!validPassword) {
             return null; // wrong pass
         }
-        return account;
+        if (account && validPassword) {
+            const token = jwt.sign({
+                id: account.id,
+            },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: "30d" }
+            )
+            return { account, token }
+        }
+
     } catch (error) {
         console.error(error);
         return null;
