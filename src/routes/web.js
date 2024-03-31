@@ -8,6 +8,7 @@ const { postCreateAccount, getAllAccount, putUpdateAccount, deleteAccount } = re
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = require('../controllers/CinemaController')
 const { getAllDirector, postCreateADirector, putUpdateADirector, deleteADirector } = require('../controllers/directorController')
 const { getAllActor, postCreateActor, putUpdateActor, deleteActor } = require('../controllers/actorController')
+const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 
 routerAPI.get('/admin', getAllAdmin)
 routerAPI.post('/admin', postCreateAdmin)
@@ -44,6 +45,11 @@ routerAPI.get('/actor', getAllActor)
 routerAPI.post('/actor', postCreateActor)
 routerAPI.put('/actor', putUpdateActor)
 routerAPI.delete('/actor', deleteActor)
+
+routerAPI.get('/category', getAllCategory)
+routerAPI.post('/category', postCreateCategory)
+routerAPI.put('/category', putUpdateCategory)
+routerAPI.delete('/category', deleteCategory)
 
 
 module.exports = routerAPI
