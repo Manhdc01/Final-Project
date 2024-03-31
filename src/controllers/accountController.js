@@ -44,6 +44,8 @@ const deleteAccount = async (req, res) => {
     })
 }
 
+
+
 module.exports = {
     postCreateAccount, getAllAccount, putUpdateAccount, deleteAccount
 }
