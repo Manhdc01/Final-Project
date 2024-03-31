@@ -6,6 +6,8 @@ const { getAllStaff, postCreateStaff, putUpdateStaff, deleteAStaff } = require('
 const { postCreateCustomer, getAllCustomer, putUpdateCustomer, deleteCustomer } = require('../controllers/customerController')
 const { postCreateAccount, getAllAccount, putUpdateAccount, deleteAccount } = require('../controllers/accountController')
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = require('../controllers/CinemaController')
+const { getAllDirector, postCreateADirector, putUpdateADirector, deleteADirector } = require('../controllers/directorController')
+
 
 routerAPI.get('/admin', getAllAdmin)
 routerAPI.post('/admin', postCreateAdmin)
@@ -32,6 +34,11 @@ routerAPI.get('/cinema', getAllCinema)
 routerAPI.post('/cinema', postCreateCinema)
 routerAPI.put('/cinema', putUpdateCinema)
 routerAPI.delete('/cinema', deleteCinema)
+
+routerAPI.get('/director', getAllDirector)
+routerAPI.post('/director', postCreateADirector)
+routerAPI.put('/director', putUpdateADirector)
+routerAPI.delete('/director', deleteADirector)
 
 
 module.exports = routerAPI
