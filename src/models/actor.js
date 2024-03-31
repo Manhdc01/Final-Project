@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Define the Cinema schema
-const directorSchema = new mongoose.Schema({
+const actorSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -17,6 +17,6 @@ const directorSchema = new mongoose.Schema({
 );
 
 // Create a model from the schema
-const Director = mongoose.model('director', directorSchema);
+const Actor = mongoose.model('actor', actorSchema);
 
-module.exports = Director;
+module.exports = Actor;
