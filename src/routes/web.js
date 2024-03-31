@@ -28,7 +28,7 @@ routerAPI.post('/customer', postCreateCustomer)
 routerAPI.put('/customer', putUpdateCustomer)
 routerAPI.delete('/customer', deleteCustomer)
 
-routerAPI.get('/account', verifyAdminAuth, getAllAccount)
+routerAPI.get('/account', verifyToken, getAllAccount)
 routerAPI.post('/account', postCreateAccount)
 routerAPI.put('/account', putUpdateAccount)
 routerAPI.delete('/account', deleteAccount)

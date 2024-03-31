@@ -35,8 +35,8 @@ const loginCustomerService = async (username, password) => {
             const token = jwt.sign({
                 id: account.id,
             },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: "30d" }
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: "1h" }
             )
             return { account, token }
         }

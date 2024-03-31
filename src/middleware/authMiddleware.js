@@ -4,7 +4,7 @@ const verifyToken = (req, res, next) => {
     const token = req.headers.authorization;
     if (token) {
         const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
             if (err) {
                 return res.status(403).json({ error: "Token is not valid" });
             }
@@ -21,7 +21,7 @@ const verifyAdminAuth = (req, res, next) => {
     const token = req.headers.authorization;
     if (token) {
         const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
             if (err) {
                 return res.status(403).json({ error: "Token is not valid" });
             }
@@ -41,7 +41,7 @@ const verifyStaffAuth = (req, res, next) => {
     const token = req.headers.authorization;
     if (token) {
         const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
             if (err) {
                 return res.status(403).json({ error: "Token is not valid" });
             }
@@ -61,7 +61,7 @@ const verifyCustomerAuth = (req, res, next) => {
     const token = req.headers.authorization;
     if (token) {
         const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
             if (err) {
                 return res.status(403).json({ error: "Token is not valid" });
             }
