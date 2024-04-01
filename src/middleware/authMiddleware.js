@@ -1,84 +1,115 @@
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
-// Middleware để xác minh token
-const verifyToken = (req, res, next) => {
-    const token = req.headers.authorization;
-    if (token) {
-        const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-            if (err) {
-                return res.status(403).json({ error: "Token is not valid" });
-            }
-            req.user = decoded;
-            next();
-        });
-    } else {
-        return res.status(401).json({ error: "You are not authenticated" });
-    }
-};
+const Account = require('../models/account')
 
-// Middleware để xác minh token và phân quyền admin
-const verifyAdminAuth = (req, res, next) => {
-    const token = req.headers.authorization;
-    if (token) {
-        const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-            if (err) {
-                return res.status(403).json({ error: "Token is not valid" });
-            }
-            if (decoded.role !== 'admin') {
-                return res.status(403).json({ error: "Unauthorized access" });
-            }
-            req.user = decoded;
-            next();
-        });
-    } else {
-        return res.status(401).json({ error: "You are not authenticated" });
-    }
-};
+const checkAdminPermission = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1]
 
-// Middleware để xác minh token và phân quyền staff
-const verifyStaffAuth = (req, res, next) => {
-    const token = req.headers.authorization;
-    if (token) {
-        const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-            if (err) {
-                return res.status(403).json({ error: "Token is not valid" });
-            }
-            if (decoded.role !== 'staff') {
-                return res.status(403).json({ error: "Unauthorized access" });
-            }
-            req.user = decoded;
-            next();
-        });
-    } else {
-        return res.status(401).json({ error: "You are not authenticated" });
-    }
-};
+        if (!token) {
+            return res.status(403).json({
+                message: "You are not yet logged in"
+            })
+        }
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        console.log(decoded)
+        const account = await Account.findById(decoded.id)
+        console.log(account)
 
-// Middleware để xác minh token và phân quyền customer
-const verifyCustomerAuth = (req, res, next) => {
-    const token = req.headers.authorization;
-    if (token) {
-        const accessToken = token.split(" ")[1];
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-            if (err) {
-                return res.status(403).json({ error: "Token is not valid" });
-            }
-            if (decoded.role !== 'customer') {
-                return res.status(403).json({ error: "Unauthorized access" });
-            }
-            req.user = decoded;
-            next();
-        });
-    } else {
-        return res.status(401).json({ error: "You are not authenticated" });
-    }
-};
+        if (!account) {
+            return res.status(403).json({
+                message: "Token invalid"
+            })
+        }
 
+        if (account.role !== "admin") {
+            return res.status(400).json({
+                message: "You have no rights"
+            })
+        }
+
+        next()
+    } catch (error) {
+        return res.json({
+            name: error.name,
+            message: error.message
+        })
+    }
+}
+
+const checkCustomerPermission = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1]
+
+        if (!token) {
+            return res.status(403).json({
+                message: "You are not yet logged in"
+            })
+        }
+
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        console.log(decoded)
+
+        const account = await Account.findById(decoded.id)
+        console.log(account)
+
+        if (!account) {
+            return res.status(403).json({
+                message: "Token invalid"
+            })
+        }
+
+        if (account.role !== "customer") {
+            return res.status(400).json({
+                message: "You have no rights"
+            })
+        }
+
+        next()
+    } catch (error) {
+        return res.json({
+            name: error.name,
+            message: error.message
+        })
+    }
+}
+
+const checkStaffPermission = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1]
+
+        if (!token) {
+            return res.status(403).json({
+                message: "You are not yet logged in"
+            })
+        }
+
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+        console.log(decoded)
+
+        const account = await Account.findById(decoded.id)
+        console.log(account)
+
+        if (!account) {
+            return res.status(403).json({
+                message: "Token invalid"
+            })
+        }
+
+        if (account.role !== "staff") {
+            return res.status(400).json({
+                message: "You have no rights"
+            })
+        }
+
+        next()
+    } catch (error) {
+        return res.json({
+            name: error.name,
+            message: error.message
+        })
+    }
+}
 module.exports = {
-    verifyToken,
-    verifyAdminAuth,
-    verifyStaffAuth,
-    verifyCustomerAuth
+    checkAdminPermission, checkCustomerPermission, checkStaffPermission
 };

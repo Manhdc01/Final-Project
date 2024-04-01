@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true }))
 //config template engine
 configViewEngine(app)
 
+
 app.use('/', webRoutes)
 
     ; (async () => {
