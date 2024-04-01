@@ -57,7 +57,7 @@ routerAPI.delete('/category', deleteCategory)
 routerAPI.post('/register', registerCustomer)
 routerAPI.post('/login', loginCustomer)
 routerAPI.post('/refresh', requestAccessToken)
-routerAPI.post('/logout', logOutCustomer)
+routerAPI.post('/logout', checkLoggedIn, logOutCustomer)
 
 
 
