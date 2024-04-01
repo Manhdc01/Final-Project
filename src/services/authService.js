@@ -1,70 +1,71 @@
 const { model } = require("mongoose");
 const bcrypt = require('bcryptjs')
-const Account = require('../models/account');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 const cookies = require('cookie-parser')
-let refreshToken = []
 
-const registerCustomerService = async (registerData, defaultRole = 'customer') => {
+const registerUserService = async (registerData, defaultRole = 'customer') => {
     try {
-        const salt = await bcrypt.genSalt(10)
-        const hashed = await bcrypt.hash(registerData.password, salt)
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(registerData.password, salt);
 
-        //Create new user
-        let account = await Account.create({
-            username: registerData.username,
-            password: hashed,
+        // Tạo mới người dùng
+        let user = await User.create({
+            name: registerData.name,
+            phone: registerData.phone,
+            email: registerData.email,
+            password: hashedPassword,
+            dateOfBirth: registerData.dateOfBirth,
+            gender: registerData.gender,
             role: registerData.role || defaultRole
-        })
-        return account
+        });
+        return user;
     } catch (error) {
         console.error(error);
-        return null
+        return null;
     }
 }
 //Generate access token
-const generateAccessToken = (accountId) => {
-    return jwt.sign({ id: accountId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "45s" });
-}
-//generate Refresh Token
-const generateRefreshToken = (accountId) => {
-    return jwt.sign({ id: accountId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "365d" });
-}
+const generateAccessToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+};
+//Generate refresh token
+const generateRefreshToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "365d" });
+};
 
-const loginCustomerService = async (username, password) => {
+const loginUserService = async (email, password) => {
     try {
-        const account = await Account.findOne({ username });
-        if (!account) {
+        const user = await User.findOne({ email });
+        if (!user) {
             return null; // User not found
         }
-        const validPassword = await bcrypt.compare(password, account.password);
+        const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            return null; // wrong pass
+            return null; // Wrong password
         }
-        if (account && validPassword) {
-            const accessToken = generateAccessToken(account.id);
-            const refreshToken = generateRefreshToken(account.id);
+        if (user && validPassword) {
+            const accessToken = generateAccessToken(user.id);
+            const refreshToken = generateRefreshToken(user.id);
 
-            return { account, accessToken, refreshToken }
+            return { user, accessToken, refreshToken };
         }
-
     } catch (error) {
         console.error(error);
-        return { account: null, accessToken: null, refreshToken: null };
+        return { user: null, accessToken: null, refreshToken: null };
     }
 }
 
 const requestAccessTokenService = (req, res) => {
-    const refreshToken = req.cookies.refreshToken; // Sử dụng req.cookies thay vì req.cookie
+    const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         return res.status(401).json({ message: "You are not authenticated" });
     }
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-            console.log(err);
+            console.error(err);
             return res.status(403).json({ message: "Token invalid" });
         }
-        // Tạo mới accessToken và refreshToken
         const newAccessToken = generateAccessToken(decoded.id);
         const newRefreshToken = generateRefreshToken(decoded.id);
 
@@ -76,12 +77,12 @@ const requestAccessTokenService = (req, res) => {
         });
         return res.status(200).json({
             accessToken: newAccessToken
-        })
+        });
     });
 }
 
 // logOutService.js
-const logOutCustomerService = (req, res) => {
+const logOutUserService = (req, res) => {
     try {
         res.clearCookie("refreshToken"); // Xóa cookie refreshToken khi đăng xuất
         res.status(200).json({ message: "Logged out successfully" });
@@ -93,6 +94,6 @@ const logOutCustomerService = (req, res) => {
 
 
 module.exports = {
-    registerCustomerService, loginCustomerService, requestAccessTokenService, logOutCustomerService
+    registerUserService, loginUserService, requestAccessTokenService, logOutUserService
 }
 

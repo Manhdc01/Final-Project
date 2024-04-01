@@ -1,6 +1,6 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const Account = require('../models/account')
+const User = require('../models/user')
 
 const checkLoggedIn = async (req, res, next) => {
     try {
@@ -14,15 +14,15 @@ const checkLoggedIn = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        const account = await Account.findById(decoded.id);
+        const user = await User.findById(decoded.id);
 
-        if (!account) {
+        if (!user) {
             return res.status(403).json({
                 message: "Token invalid"
             });
         }
 
-        req.account = account; // Lưu thông tin tài khoản vào request để sử dụng sau này
+        req.user = user; // Lưu thông tin tài khoản vào request để sử dụng sau này
         next();
     } catch (error) {
         return res.status(500).json({
@@ -42,15 +42,15 @@ const checkAdminPermission = async (req, res, next) => {
             })
         }
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        const account = await Account.findById(decoded.id)
+        const user = await User.findById(decoded.id)
 
-        if (!account) {
+        if (!user) {
             return res.status(403).json({
                 message: "Token invalid"
             })
         }
 
-        if (account.role !== "admin") {
+        if (user.role !== "admin") {
             return res.status(400).json({
                 message: "You have no rights"
             })
@@ -76,15 +76,15 @@ const checkCustomerPermission = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        const account = await Account.findById(decoded.id)
+        const user = await User.findById(decoded.id)
 
-        if (!account) {
+        if (!user) {
             return res.status(403).json({
                 message: "Token invalid"
             })
         }
 
-        if (account.role !== "customer") {
+        if (user.role !== "customer") {
             return res.status(400).json({
                 message: "You have no rights"
             })
@@ -111,16 +111,16 @@ const checkStaffPermission = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
-        const account = await Account.findById(decoded.id)
+        const user = await User.findById(decoded.id)
 
 
-        if (!account) {
+        if (!user) {
             return res.status(403).json({
                 message: "Token invalid"
             })
         }
 
-        if (account.role !== "staff") {
+        if (user.role !== "staff") {
             return res.status(400).json({
                 message: "You have no rights"
             })

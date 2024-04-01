@@ -1,23 +1,43 @@
-const { registerCustomerService, loginCustomerService, requestAccessTokenService, logOutCustomerService } = require('../services/authService')
+const { registerUserService, loginUserService, requestAccessTokenService, logOutUserService } = require('../services/authService')
 
-const registerCustomer = async (req, res) => {
+const registerUser = async (req, res) => {
     try {
-        let { username, password, role } = req.body
-        // Check input data
-        if (!username || !password) {
-            return res.status(400).json({ errorCode: 400, message: "Missing username or password" });
+        const { name, phone, email, password, dateOfBirth, gender, role } = req.body;
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!email || !password || !role || !name || !phone || !dateOfBirth || !gender) {
+            return res.status(400).json({ errorCode: 400, message: "Missing required fields" });
         }
-        let registerData = {
-            username,
+
+        // Gọi hàm service để đăng ký người dùng
+        const registerData = {
+            name,
+            phone,
+            email,
             password,
+            dateOfBirth,
+            gender,
             role
+        };
+
+        const register = await registerUserService(registerData);
+
+        // Kiểm tra kết quả đăng ký từ service
+        if (!register) {
+            return res.status(500).json({
+                errorCode: 500,
+                message: "Failed to register user"
+            });
         }
-        let register = await registerCustomerService(registerData)
+
+        // Trả về kết quả thành công
         return res.status(200).json({
             errorCode: 0,
             data: register
-        })
+        });
     } catch (error) {
+        // Xử lý bất kỳ lỗi nào xảy ra trong quá trình xử lý request
+        console.error(error);
         return res.status(500).json({
             errorCode: 500,
             message: "Internal server error"
@@ -26,18 +46,24 @@ const registerCustomer = async (req, res) => {
 
 }
 
-const loginCustomer = async (req, res) => {
+const loginUser = async (req, res) => {
     try {
-        let { username, password } = req.body;
-        const { accessToken, refreshToken, account } = await loginCustomerService(username, password);
+        const email = req.body.email
+        const password = req.body.password
 
-        if (!account) {
-            // User not found or password incorrect
-            return res.status(404).json({
-                errorCode: 404,
-                message: "Wrong username or password"
+        console.log(email)
+        const loginResult = await loginUserService(email, password);
+
+        if (!loginResult || !loginResult.accessToken) {
+            // Không có kết quả hoặc accessToken không tồn tại
+            return res.status(300).json({
+                errorCode: 300,
+                message: "Wrong email or password"
             });
         }
+
+        const { accessToken, refreshToken, user } = loginResult;
+
         // Set refresh token in a cookie
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
@@ -48,7 +74,7 @@ const loginCustomer = async (req, res) => {
         // Login success!
         return res.status(200).json({
             errorCode: 0,
-            data: { account, accessToken }
+            data: { user, accessToken }
         });
     } catch (error) {
         console.error(error);
@@ -68,14 +94,14 @@ const requestAccessToken = (req, res) => {
     }
 };
 
-const logOutCustomer = (req, res) => {
+const logOutUser = (req, res) => {
     try {
-        logOutCustomerService(req, res); // Gọi hàm từ service để đăng xuất
+        logOutUserService(req, res); // Gọi hàm từ service để đăng xuất
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
 module.exports = {
-    registerCustomer, loginCustomer, requestAccessToken, logOutCustomer
+    registerUser, loginUser, requestAccessToken, logOutUser
 }
