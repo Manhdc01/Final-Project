@@ -12,6 +12,20 @@ const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } 
 const { registerCustomer, loginCustomer, requestAccessToken, logOutCustomer } = require('../controllers/authController')
 const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, checkLoggedIn } = require('../middleware/authMiddleware')
 
+// Route cho trang chủ, mọi người đều có thể truy cập
+routerAPI.get('/homePage', (req, res) => {
+    res.send('Welcome to the home page!');
+});
+
+// Route '/adminPage' chỉ có thể truy cập bởi người dùng có vai trò là 'admin'
+routerAPI.get('/adminPage', checkLoggedIn, checkAdminPermission, (req, res) => {
+    res.send('Welcome to the admin page!');
+});
+
+// Route '/staffPage' chỉ có thể truy cập bởi người dùng có vai trò là 'staff' hoặc 'admin'
+routerAPI.get('/staffPage', checkLoggedIn, checkStaffPermission, (req, res) => {
+    res.send('Welcome to the staff page!');
+});
 
 routerAPI.get('/admin', getAllAdmin)
 routerAPI.post('/admin', postCreateAdmin)
