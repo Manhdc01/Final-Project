@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+const cookieParser = require('cookie-parser');
 const webRoutes = require('./routes/web')
 const path = require('path')
 const configViewEngine = require('./config/viewEngine')
@@ -17,6 +18,7 @@ app.use(cors({
 //config req.body
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser());
 
 //config template engine
 configViewEngine(app)

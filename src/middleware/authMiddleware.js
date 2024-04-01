@@ -2,6 +2,35 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const Account = require('../models/account')
 
+const checkLoggedIn = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+
+        if (!token) {
+            return res.status(403).json({
+                message: "You are not logged in"
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const account = await Account.findById(decoded.id);
+
+        if (!account) {
+            return res.status(403).json({
+                message: "Token invalid"
+            });
+        }
+
+        req.account = account; // Lưu thông tin tài khoản vào request để sử dụng sau này
+        next();
+    } catch (error) {
+        return res.status(500).json({
+            name: error.name,
+            message: error.message
+        });
+    }
+};
+
 const checkAdminPermission = async (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1]
@@ -12,9 +41,7 @@ const checkAdminPermission = async (req, res, next) => {
             })
         }
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        console.log(decoded)
         const account = await Account.findById(decoded.id)
-        console.log(account)
 
         if (!account) {
             return res.status(403).json({
@@ -48,10 +75,7 @@ const checkCustomerPermission = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        console.log(decoded)
-
         const account = await Account.findById(decoded.id)
-        console.log(account)
 
         if (!account) {
             return res.status(403).json({
@@ -85,10 +109,9 @@ const checkStaffPermission = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        console.log(decoded)
 
         const account = await Account.findById(decoded.id)
-        console.log(account)
+
 
         if (!account) {
             return res.status(403).json({
@@ -111,5 +134,5 @@ const checkStaffPermission = async (req, res, next) => {
     }
 }
 module.exports = {
-    checkAdminPermission, checkCustomerPermission, checkStaffPermission
+    checkLoggedIn, checkAdminPermission, checkCustomerPermission, checkStaffPermission
 };

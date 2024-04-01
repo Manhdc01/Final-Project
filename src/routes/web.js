@@ -9,8 +9,8 @@ const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = requir
 const { getAllDirector, postCreateADirector, putUpdateADirector, deleteADirector } = require('../controllers/directorController')
 const { getAllActor, postCreateActor, putUpdateActor, deleteActor } = require('../controllers/actorController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
-const { registerCustomer, loginCustomer } = require('../controllers/authController')
-const { checkAdminPermission, checkCustomerPermission, checkStaffPermission } = require('../middleware/authMiddleware')
+const { registerCustomer, loginCustomer, requestAccessToken, logOutCustomer } = require('../controllers/authController')
+const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, checkLoggedIn } = require('../middleware/authMiddleware')
 
 
 routerAPI.get('/admin', getAllAdmin)
@@ -56,6 +56,9 @@ routerAPI.delete('/category', deleteCategory)
 
 routerAPI.post('/register', registerCustomer)
 routerAPI.post('/login', loginCustomer)
+routerAPI.post('/refresh', requestAccessToken)
+routerAPI.post('/logout', logOutCustomer)
+
 
 
 module.exports = routerAPI
