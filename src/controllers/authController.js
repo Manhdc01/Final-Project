@@ -51,7 +51,6 @@ const loginUser = async (req, res) => {
         const email = req.body.email
         const password = req.body.password
 
-        console.log(email)
         const loginResult = await loginUserService(email, password);
 
         if (!loginResult || !loginResult.accessToken) {
