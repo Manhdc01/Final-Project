@@ -1,3 +1,5 @@
+
+
 const { registerUserService, loginUserService, requestAccessTokenService, logOutUserService } = require('../services/authService')
 
 const registerUser = async (req, res) => {

@@ -115,7 +115,8 @@ const sendResetEmail = async (email) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            throw new Error('User not found');
+            console.log('User not found for email:', email);
+            return;
         }
 
         // Generate reset token
@@ -123,6 +124,10 @@ const sendResetEmail = async (email) => {
         user.resetToken = resetToken;
         user.resetTokenExpiresAt = Date.now() + 3600000; // Token expires in 1 hour
         await user.save();
+
+        console.log(">>>Token:::", resetToken)
+        // Construct reset link
+        const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
 
         // Send reset email
         const transporter = nodemailer.createTransport({
@@ -132,29 +137,54 @@ const sendResetEmail = async (email) => {
                 pass: process.env.EMAIL_PASS
             }
         });
-        console.log(process.env.EMAIL_USER);
-        console.log(process.env.EMAIL_PASS);
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'Password Reset',
-            text: `Your password reset token is: \n\n`
-                + `If you did not request this, please ignore this email and your password will remain unchanged.\n`
+            html: `<p>You are receiving this email because a password reset request was received for your account.</p>
+                   <p>Please click <a href="${resetLink}">here</a> to reset your password.</p>
+                   <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>`
         };
-
         await transporter.sendMail(mailOptions);
 
         return resetToken;
     } catch (error) {
-        throw new Error('Failed to send reset email');
+        console.log('Failed to send reset email');
+        return
     }
 };
+
+const resetPasswordService = async (token, newPassword) => {
+    try {
+        // Find user by reset token
+        const user = await User.findOne({
+            resetToken: token,
+            resetTokenExpiresAt: { $gt: Date.now() }
+        });
+
+        // If user not found or token expired
+        if (!user) {
+            return { status: 400, message: 'Invalid or expired reset token' };
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Set new password
+        user.password = hashedPassword;
+        user.resetToken = undefined;
+        user.resetTokenExpiresAt = undefined;
+        await user.save();
+
+        // Return success response
+        return { status: 200, message: 'Password reset successfully' };
+    } catch (error) {
+        throw new Error('Failed to reset password');
+    }
+}
 
 
 
 module.exports = {
     registerUserService, loginUserService, requestAccessTokenService, logOutUserService, changePasswordService,
-    sendResetEmail
+    sendResetEmail, resetPasswordService
 }
 

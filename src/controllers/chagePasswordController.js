@@ -1,4 +1,4 @@
-const { changePasswordService , sendResetEmail} = require('../services/authService')
+const { changePasswordService, sendResetEmail, resetPasswordService } = require('../services/authService')
 const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -27,6 +27,17 @@ const forgotPassword = async (req, res) => {
         return res.status(500).json({ message: 'Failed to send reset email' });
     }
 }
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        const result = await resetPasswordService(token, newPassword);
+        return res.status(result.status).json({ message: result.message });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Failed to reset password' });
+    }
+};
 module.exports = {
-    changePassword, forgotPassword
+    changePassword, forgotPassword, resetPassword
 }
