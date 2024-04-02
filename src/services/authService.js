@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs')
 const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 const cookies = require('cookie-parser')
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+require('dotenv').config();
 
 const registerUserService = async (registerData, defaultRole = 'customer') => {
     try {
@@ -108,8 +111,50 @@ const changePasswordService = async (userId, currentPassword, newPassword) => {
 
 }
 
+const sendResetEmail = async (email) => {
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        user.resetToken = resetToken;
+        user.resetTokenExpiresAt = Date.now() + 3600000; // Token expires in 1 hour
+        await user.save();
+
+        // Send reset email
+        const transporter = nodemailer.createTransport({
+            service: 'hotmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+        console.log(process.env.EMAIL_USER);
+        console.log(process.env.EMAIL_PASS);
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset',
+            text: `Your password reset token is: \n\n`
+                + `If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return resetToken;
+    } catch (error) {
+        throw new Error('Failed to send reset email');
+    }
+};
+
+
 
 module.exports = {
-    registerUserService, loginUserService, requestAccessTokenService, logOutUserService, changePasswordService
+    registerUserService, loginUserService, requestAccessTokenService, logOutUserService, changePasswordService,
+    sendResetEmail
 }
 

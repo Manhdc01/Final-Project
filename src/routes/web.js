@@ -5,7 +5,7 @@ const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } 
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
 const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, checkLoggedIn } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser } = require('../controllers/userController')
-const { changePassword } = require('../controllers/chagePasswordController')
+const { changePassword ,forgotPassword} = require('../controllers/chagePasswordController')
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
 })
@@ -17,6 +17,7 @@ routerAPI.post('/refresh', requestAccessToken)
 routerAPI.post('/logout', checkLoggedIn, logOutUser)
 
 routerAPI.post('/change-password', checkLoggedIn, changePassword)
+routerAPI.post('/forgot-password', forgotPassword)
 
 
 routerAPI.get('/users', checkLoggedIn, getAllUser)
