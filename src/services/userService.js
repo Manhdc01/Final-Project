@@ -60,6 +60,7 @@ const deleteUserService = async (id) => {
     }
 }
 
+
 module.exports = {
     createUserService, getAllUserService, putUpdateUserService, deleteUserService
 }

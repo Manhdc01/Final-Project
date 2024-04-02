@@ -92,8 +92,24 @@ const logOutUserService = (req, res) => {
     }
 };
 
+const changePasswordService = async (userId, currentPassword, newPassword) => {
+    // find user
+    const user = await User.findById(userId);
+
+    // check currrent password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidPassword) {
+        throw new Error('Current password is incorrect');
+    }
+
+    // Encrypt the new password and update it to the database
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(userId, { password: hashedPassword });
+
+}
+
 
 module.exports = {
-    registerUserService, loginUserService, requestAccessTokenService, logOutUserService
+    registerUserService, loginUserService, requestAccessTokenService, logOutUserService, changePasswordService
 }
 
