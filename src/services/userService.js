@@ -59,8 +59,26 @@ const deleteUserService = async (id) => {
         return null;
     }
 }
+const getProfileService = async (id) => {
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return null;
+        }
 
+        return {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            dateOfBirth: user.dateOfBirth,
+            gender: user.gender,
+        };
+    } catch (error) {
+        console.error("Error when getting profile:", error);
+        return null;
+    }
+}
 
 module.exports = {
-    createUserService, getAllUserService, putUpdateUserService, deleteUserService
+    createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileService
 }

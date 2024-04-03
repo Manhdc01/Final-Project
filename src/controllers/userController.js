@@ -1,4 +1,5 @@
-const { createUserService, getAllUserService, putUpdateUserService, deleteUserService } = require('../services/userService')
+const User = require('../models/user');
+const { createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileService } = require('../services/userService')
 
 const postCreateUser = async (req, res) => {
     try {
@@ -65,8 +66,39 @@ const deleteUser = async (req, res) => {
     })
 }
 
+const getProfile = async (req, res) => {
+    let id = req.body.id
+    let userProfile = await getProfileService(id)
+    return res.status(200).json({
+        errorCode: 0,
+        data: userProfile
+    })
+}
+
+const getSortedUsersAscending = async (req, res) => {
+    const usersSorted = await User.find().sort({ name: 1 });
+    res.status(200).json(usersSorted);
+};
+
+const getSortedUsersDescending = async (req, res) => {
+    const usersSorted = await User.find().sort({ name: -1 });
+    res.status(200).json(usersSorted);
+};
+
+const searchUsersByName = async (req, res) => {
+    try {
+        const { name } = req.query;
+        const regex = new RegExp(name, 'i'); // 'i' to search case-insensitively
+        const users = await User.find({ name: { $regex: regex } });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error while searching users by name:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 
 
 module.exports = {
-    postCreateUser, getAllUser, putUpdateUser, deleteUser
+    postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending, searchUsersByName
 }

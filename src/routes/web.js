@@ -7,8 +7,10 @@ const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = requir
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
 const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, checkLoggedIn } = require('../middleware/authMiddleware')
-const { postCreateUser, getAllUser, putUpdateUser, deleteUser } = require('../controllers/userController')
+const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending
+    , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
+
 
 routerAPI.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -17,10 +19,6 @@ routerAPI.get('/google/redirect',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
         const { user, accessToken } = req.user;
-
-        // Thực hiện các xử lý bạn muốn ở đây nếu cần
-
-        // Trả về kết quả cho client
         res.status(200).json({
             user: user,
             accessToken: accessToken
@@ -34,6 +32,7 @@ routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
 })
 
+
 routerAPI.post('/login', loginUser)//loginUser
 
 routerAPI.post('/register', registerUser)
@@ -44,7 +43,11 @@ routerAPI.post('/change-password', checkLoggedIn, changePassword)
 routerAPI.post('/forgot-password', forgotPassword)
 routerAPI.post('/reset-password', resetPassword)
 
+routerAPI.get('/profile', getProfile)
+routerAPI.get('/users/sorted-ascending', getSortedUsersAscending);
+routerAPI.get('/users/sorted-descending', getSortedUsersDescending);
 
+routerAPI.get('/users/search', searchUsersByName);
 routerAPI.get('/users', checkLoggedIn, getAllUser)
 routerAPI.post('/users', postCreateUser)
 routerAPI.put('/users', putUpdateUser)
