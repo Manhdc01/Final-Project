@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
             data: register
         });
     } catch (error) {
-        // Xử lý bất kỳ lỗi nào xảy ra trong quá trình xử lý request
+        // Xử lý bất kỳ lỗi 
         console.error(error);
         return res.status(500).json({
             errorCode: 500,
