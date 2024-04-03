@@ -1,11 +1,35 @@
 const express = require('express')
 const routerAPI = express.Router()
+const passport = require('passport')
+
+
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = require('../controllers/cinemaController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
 const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, checkLoggedIn } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
+
+routerAPI.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+routerAPI.get('/google/redirect',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function (req, res) {
+        const { user, accessToken } = req.user;
+
+        // Thực hiện các xử lý bạn muốn ở đây nếu cần
+
+        // Trả về kết quả cho client
+        res.status(200).json({
+            user: user,
+            accessToken: accessToken
+        });
+        // // console.log(req);
+        // // Successful authentication, redirect home.
+        // res.send("Login with google success");
+    });
+
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
 })

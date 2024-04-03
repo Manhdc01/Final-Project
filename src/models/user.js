@@ -8,8 +8,7 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true,
-        maxLength: 10,
+        maxLength: 10
     },
     email: {
         type: String,
@@ -31,14 +30,16 @@ const userSchema = new mongoose.Schema({
     },
     dateOfBirth: {
         type: Date,
-        required: true,
     },
     gender: {
         type: String,
-        required: true,
     },
     role: {
         type: String,
+    },
+    type: {
+        type: String,
+        default: 'Local'
     },
     resetToken: {
         type: String,

@@ -118,7 +118,6 @@ const sendResetEmail = async (email) => {
             console.log('User not found for email:', email);
             return;
         }
-
         // Generate reset token
         const resetToken = crypto.randomBytes(20).toString('hex');
         user.resetToken = resetToken;
@@ -181,10 +180,28 @@ const resetPasswordService = async (token, newPassword) => {
     }
 }
 
+const upsertUserSocialMedia = async (typeAccount, dataRaw) => {
+    let user = null;
+    let defaultPassword = "123456";
+    if (typeAccount === 'Google') {
+        user = await User.findOne({ email: dataRaw.email, type: typeAccount });
+        if (!user) {
+            // Create a new account
+            user = await User.create({
+                email: dataRaw.email,
+                name: dataRaw.name,
+                type: typeAccount,
+                password: defaultPassword
+            });
+        }
+    }
+    return user;
+}
 
 
 module.exports = {
     registerUserService, loginUserService, requestAccessTokenService, logOutUserService, changePasswordService,
-    sendResetEmail, resetPasswordService
+    sendResetEmail, resetPasswordService,
+    upsertUserSocialMedia, generateAccessToken, generateRefreshToken//upsert is update and insert
 }
 
