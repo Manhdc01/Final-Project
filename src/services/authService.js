@@ -47,12 +47,21 @@ const loginUserService = async (email, password) => {
         if (!validPassword) {
             return null; // Wrong password
         }
-        if (user && validPassword) {
-            const accessToken = generateAccessToken(user.id);
-            const refreshToken = generateRefreshToken(user.id);
+        // let role;
+        // switch (user.role) {
+        //     case 'admin':
+        //         role = 'admin';
+        //         break;
+        //     case 'staff':
+        //         role = 'staff';
+        //         break;
+        //     default:
+        //         role = 'customer';
+        // }
+        const accessToken = generateAccessToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
 
-            return { user, accessToken, refreshToken };
-        }
+        return { user, accessToken, refreshToken };
     } catch (error) {
         console.error(error);
         return { user: null, accessToken: null, refreshToken: null };

@@ -1,5 +1,3 @@
-
-
 const { registerUserService, loginUserService, requestAccessTokenService, logOutUserService } = require('../services/authService')
 
 const registerUser = async (req, res) => {
@@ -72,6 +70,8 @@ const loginUser = async (req, res) => {
             path: "/",
             sameSite: "strict"
         });
+        // storeAccessToken(accessToken, refreshToken, 10, user.id)
+        // storeRefreshToken(refreshToken, accessToken, 100, user.id)
         // Login success!
         return res.status(200).json({
             errorCode: 0,

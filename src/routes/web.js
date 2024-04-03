@@ -10,6 +10,7 @@ const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, che
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending
     , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
+const { getAllMovie, postCreateMovie, } = require('../controllers/movieController')
 
 
 routerAPI.get('/auth/google',
@@ -23,9 +24,6 @@ routerAPI.get('/google/redirect',
             user: user,
             accessToken: accessToken
         });
-        // // console.log(req);
-        // // Successful authentication, redirect home.
-        // res.send("Login with google success");
     });
 
 routerAPI.get('/login', (req, res) => {
@@ -47,22 +45,24 @@ routerAPI.get('/profile', getProfile)
 routerAPI.get('/users/sorted-ascending', getSortedUsersAscending);
 routerAPI.get('/users/sorted-descending', getSortedUsersDescending);
 
-routerAPI.get('/users/search', searchUsersByName);
-routerAPI.get('/users', checkLoggedIn, getAllUser)
-routerAPI.post('/users', postCreateUser)
-routerAPI.put('/users', putUpdateUser)
-routerAPI.delete('/users', deleteUser)
+routerAPI.get('/users/search', checkAdminPermission, searchUsersByName);
+routerAPI.get('/users', checkAdminPermission, getAllUser)
+routerAPI.post('/users', checkAdminPermission, postCreateUser)
+routerAPI.put('/users', checkAdminPermission, putUpdateUser)
+routerAPI.delete('/users', checkAdminPermission, deleteUser)
 
-routerAPI.get('/cinema', getAllCinema)
-routerAPI.post('/cinema', postCreateCinema)
-routerAPI.put('/cinema', putUpdateCinema)
+routerAPI.get('/cinema', checkAdminPermission, getAllCinema)
+routerAPI.post('/cinema', checkAdminPermission, postCreateCinema)
+routerAPI.put('/cinema', checkAdminPermission, putUpdateCinema)
 routerAPI.delete('/cinema', deleteCinema)
 
-routerAPI.get('/category', getAllCategory)
-routerAPI.post('/category', postCreateCategory)
-routerAPI.put('/category', putUpdateCategory)
-routerAPI.delete('/category', deleteCategory)
+routerAPI.get('/category', checkAdminPermission, getAllCategory)
+routerAPI.post('/category', checkAdminPermission, postCreateCategory)
+routerAPI.put('/category', checkAdminPermission, putUpdateCategory)
+routerAPI.delete('/category', checkAdminPermission, deleteCategory)
 
+routerAPI.get('/movie', checkAdminPermission, getAllMovie)
+routerAPI.post('/category', checkAdminPermission, postCreateMovie)
 
 
 

@@ -10,6 +10,7 @@ const configViewEngine = require('./config/viewEngine')
 const { loginWithGoogle } = require('./controllers/googleController')
 const connection = require('./config/database')
 
+
 const app = express()
 const port = process.env.PORT || 8888//port
 const hostname = process.env.HOST_NAME
@@ -33,6 +34,7 @@ app.use(cookieParser());
 //config template engine
 configViewEngine(app)
 loginWithGoogle()
+
 
 // Cấu hình serialize và deserialize user
 passport.serializeUser((user, done) => {
