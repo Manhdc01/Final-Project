@@ -55,15 +55,15 @@ routerAPI.post('/create-users', postCreateUser);
 routerAPI.put('/update-users', putUpdateUser);
 routerAPI.delete('/delete-users/:id', deleteUser);
 
-routerAPI.get('/cinema', checkAdminPermission, getAllCinema)
-routerAPI.post('/cinema', checkAdminPermission, postCreateCinema)
-routerAPI.put('/cinema', checkAdminPermission, putUpdateCinema)
-routerAPI.delete('/cinema', deleteCinema)
+routerAPI.get('/all-cinema', checkAdminPermission, getAllCinema)
+routerAPI.post('/create-cinema', checkAdminPermission, postCreateCinema)
+routerAPI.put('/update-cinema', checkAdminPermission, putUpdateCinema)
+routerAPI.delete('/delete-cinema/:id', deleteCinema)
 
-routerAPI.get('/category', checkAdminPermission, getAllCategory)
-routerAPI.post('/category', checkAdminPermission, postCreateCategory)
-routerAPI.put('/category', checkAdminPermission, putUpdateCategory)
-routerAPI.delete('/category', checkAdminPermission, deleteCategory)
+routerAPI.get('/all-category', checkAdminPermission, getAllCategory)
+routerAPI.post('/create-category', checkAdminPermission, postCreateCategory)
+routerAPI.put('/update-category', checkAdminPermission, putUpdateCategory)
+routerAPI.delete('/delete-category/:id', checkAdminPermission, deleteCategory)
 
 routerAPI.get('/movie', checkAdminPermission, getAllMovie)
 routerAPI.post('/category', checkAdminPermission, postCreateMovie)

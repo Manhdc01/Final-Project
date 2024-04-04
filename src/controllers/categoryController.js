@@ -26,7 +26,7 @@ const putUpdateCategory = async (req, res) => {
     })
 }
 const deleteCategory = async (req, res) => {
-    let id = req.body.id
+    let id = req.params.id
     let category = await deleteCategoryService(id)
     return res.status(200).json({
         errorCode: 0,

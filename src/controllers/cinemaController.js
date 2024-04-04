@@ -33,7 +33,7 @@ const putUpdateCinema = async (req, res) => {
 }
 
 const deleteCinema = async (req, res) => {
-    let id = req.body.id
+    let id = req.params.id
     let cinema = await deleteCinemaService(id)
     return res.status(200).json({
         errorCode: 0,
