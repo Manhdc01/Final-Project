@@ -58,12 +58,28 @@ const putUpdateUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    let id = req.body.id
-    let userDelete = await deleteUserService(id)
-    return res.status(200).json({
-        errorCode: 0,
-        data: userDelete
-    })
+    const userId = req.params.id;
+    try {
+        const userDelete = await deleteUserService(userId);
+        if (userDelete) {
+            return res.status(200).json({
+                errorCode: 0,
+                data: userDelete
+            });
+        } else {
+            // Nếu không tìm thấy người dùng để xóa, trả về phản hồi 404
+            return res.status(404).json({
+                errorCode: 404,
+                message: "User not found"
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            errorCode: 500,
+            message: "Internal server error"
+        });
+    }
 }
 
 const getProfile = async (req, res) => {

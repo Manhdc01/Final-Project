@@ -37,10 +37,6 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
     },
-    type: {
-        type: String,
-        default: 'Local'
-    },
     resetToken: {
         type: String,
     },

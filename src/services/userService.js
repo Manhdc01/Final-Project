@@ -43,16 +43,16 @@ const getAllUserService = async (req, res) => {
 }
 const putUpdateUserService = async (id, name, phone, email, password, dateOfBirth, gender, role) => {
     try {
-        let result = await User.findByIdAndUpdate(id, { name, phone, email, password, dateOfBirth, gender, role });
+        let result = await User.updateOne({ _id: id }, { name, phone, email, password, dateOfBirth, gender, role });
         return result;
     } catch (error) {
         console.log(error);
         return null;
     }
 }
-const deleteUserService = async (id) => {
+const deleteUserService = async (userId) => {
     try {
-        let result = await User.findByIdAndDelete(id)
+        let result = await User.deleteOne({ _id: userId })
         return result
     } catch (error) {
         console.log(error);

@@ -46,10 +46,14 @@ routerAPI.get('/users/sorted-ascending', getSortedUsersAscending);
 routerAPI.get('/users/sorted-descending', getSortedUsersDescending);
 
 routerAPI.get('/users/search', checkAdminPermission, searchUsersByName);
-routerAPI.get('/users', checkAdminPermission, getAllUser)
-routerAPI.post('/users', checkAdminPermission, postCreateUser)
-routerAPI.put('/users', checkAdminPermission, putUpdateUser)
-routerAPI.delete('/users', checkAdminPermission, deleteUser)
+// routerAPI.get('/users', getAllUser)
+// routerAPI.post('/users', postCreateUser)
+// routerAPI.put('/users', putUpdateUser)
+// routerAPI.delete('/users', deleteUser)
+routerAPI.get('/all-users', getAllUser);
+routerAPI.post('/create-users', postCreateUser);
+routerAPI.put('/update-users', putUpdateUser);
+routerAPI.delete('/delete-users/:id', deleteUser);
 
 routerAPI.get('/cinema', checkAdminPermission, getAllCinema)
 routerAPI.post('/cinema', checkAdminPermission, postCreateCinema)
