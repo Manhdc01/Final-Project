@@ -1,13 +1,14 @@
 const { model } = require("mongoose")
 const User = require('../models/user')
-
+const bcrypt = require('bcryptjs');
 const createUserService = async (userData) => {
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
     try {
         let result = await User.create({
             name: userData.name,
             phone: userData.phone,
             email: userData.email,
-            password: userData.password,
+            password: hashedPassword,
             dateOfBirth: userData.dateOfBirth,
             gender: userData.gender,
             role: userData.role

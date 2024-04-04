@@ -83,6 +83,7 @@ const deleteUser = async (req, res) => {
 }
 
 const getProfile = async (req, res) => {
+    console.log(userId)
     let id = req.body.id
     let userProfile = await getProfileService(id)
     return res.status(200).json({
