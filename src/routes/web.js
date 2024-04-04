@@ -10,7 +10,7 @@ const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, che
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending
     , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
-const { getAllMovie, postCreateMovie, } = require('../controllers/movieController')
+const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie} = require('../controllers/movieController')
 
 
 routerAPI.get('/auth/google',
@@ -65,8 +65,10 @@ routerAPI.post('/create-category', checkAdminPermission, postCreateCategory)
 routerAPI.put('/update-category', checkAdminPermission, putUpdateCategory)
 routerAPI.delete('/delete-category/:id', checkAdminPermission, deleteCategory)
 
-routerAPI.get('/movie', checkAdminPermission, getAllMovie)
-routerAPI.post('/category', checkAdminPermission, postCreateMovie)
+routerAPI.get('/all-movie', checkAdminPermission, getAllMovie)
+routerAPI.post('/create-movie', checkAdminPermission, postCreateMovie)
+routerAPI.put('/update-movie', checkAdminPermission, putupdateMovie)
+routerAPI.delete('/delete-movie/:id', checkAdminPermission, deleteMovie)
 
 
 

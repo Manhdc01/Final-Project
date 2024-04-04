@@ -1,4 +1,4 @@
-const { postCreateMovieService } = require('../services/movieService')
+const { postCreateMovieService, getAllMovieService, putUpdateMovieService,deleteMovieService } = require('../services/movieService')
 
 const getAllMovie = async (req, res) => {
     let movie = await getAllMovieService()
@@ -20,6 +20,24 @@ const postCreateMovie = async (req, res) => {
     })
 }
 
+const putupdateMovie = async (req, res) => {
+    let { id, name, poster, director, performer, category, premiere, time, language, trailerUrl } = req.body
+
+    let movieUpdate = await putUpdateMovieService(id, name, poster, director, performer, category, premiere, time, language, trailerUrl)
+    return res.status(200).json({
+        errorCode:0,
+        data: movieUpdate
+    })
+}
+
+const deleteMovie = async(req, res) => {
+    let id = req.params.id
+    const deleteMovie = await movieService.deleteMovieService(id);
+    return res.status(200).json({
+        errorCode:0,
+        data: deleteMovie
+    })
+}
 module.exports = {
-    getAllMovie, postCreateMovie
+    getAllMovie, postCreateMovie, putupdateMovie, deleteMovie
 }

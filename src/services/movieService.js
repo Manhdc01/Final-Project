@@ -34,6 +34,27 @@ const getAllMovieService = async (req, res) => {
     }
 }
 
+const putUpdateMovieService = async(id, name, poster, director, performer, category, premiere, time, language, trailerUrl)=> {
+    try {
+        let result = await Movie.updateOne({_id:id}, {name, poster, director, performer, category, premiere, time, language, trailerUrl})
+        return result
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
+
+const deleteMovieService = async(id) => {
+    try {
+        let result = await Movie.deleteOne({_id:id})
+        return result
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+    
+
+}
 module.exports = {
-    postCreateMovieService
+    postCreateMovieService, getAllMovieService, putUpdateMovieService, deleteMovieService
 }
