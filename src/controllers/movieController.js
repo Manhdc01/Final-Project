@@ -1,5 +1,7 @@
-const { postCreateMovieService, getAllMovieService, putUpdateMovieService, deleteMovieService, getMovieNowShowingService, getMovieUpcomingService } = require('../services/movieService')
+const { postCreateMovieService, getAllMovieService, putUpdateMovieService, deleteMovieService, getMovieNowShowingService, getMovieUpcomingService,
+    uploadImage } = require('../services/movieService')
 const { uploadSingleFile } = require('../services/fileService')
+const fs = require('fs')
 
 const getAllMovie = async (req, res) => {
     let movie = await getAllMovieService()
@@ -10,7 +12,8 @@ const getAllMovie = async (req, res) => {
 }
 const postCreateMovie = async (req, res) => {
     let { name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body;
-
+    let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
+    let imageUploadResult = {}
     if (!req.files || !req.files.poster) {
         console.log("No file uploaded");
     } else {
@@ -20,13 +23,20 @@ const postCreateMovie = async (req, res) => {
         let fileUploadResult = await uploadSingleFile(poster);
         let file_addr = fileUploadResult.path;
         console.log("Url image:", file_addr);
+        // upload to imgur
+        imageUploadResult = await uploadImage(file_addr);
+        console.log(">>>>check", imageUploadResult)
+        dataMovie.poster = imageUploadResult.imageUrl
+        console.log(dataMovie.poster)
+        // remove file from local
+        try {
+            fs.unlinkSync(file_addr);
+        }
+        catch (err) {
+            console.log(err)
+        }
 
-        // Sử dụng đường dẫn của file ảnh trong movieData
-        let movieData = {
-            name, poster: file_addr, director, performer, category, premiere, time, language, trailerUrl, status
-        };
-
-        let movie = await postCreateMovieService(movieData);
+        let movie = await postCreateMovieService(dataMovie);
         return res.status(200).json({
             errorCode: 0,
             data: movie

@@ -1,6 +1,8 @@
 const { model } = require("mongoose")
 const User = require('../models/user')
 const bcrypt = require('bcryptjs');
+
+
 const createUserService = async (userData) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     try {
@@ -79,6 +81,8 @@ const getProfileService = async (id) => {
         return null;
     }
 }
+
+
 
 module.exports = {
     createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileService
