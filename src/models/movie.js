@@ -22,6 +22,7 @@ const movieSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid URL for trailer`
         }
     },
+    status: { type: String, enum: ['Now Showing', 'Upcoming'] }
 
 },
     {

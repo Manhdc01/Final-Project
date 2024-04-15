@@ -47,17 +47,6 @@ const loginUserService = async (email, password) => {
         if (!validPassword) {
             return null; // Wrong password
         }
-        // let role;
-        // switch (user.role) {
-        //     case 'admin':
-        //         role = 'admin';
-        //         break;
-        //     case 'staff':
-        //         role = 'staff';
-        //         break;
-        //     default:
-        //         role = 'customer';
-        // }
         const accessToken = generateAccessToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
 

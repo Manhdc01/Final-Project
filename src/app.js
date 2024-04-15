@@ -9,6 +9,7 @@ const path = require('path')
 const configViewEngine = require('./config/viewEngine')
 const { loginWithGoogle } = require('./controllers/googleController')
 const connection = require('./config/database')
+const fileUpload = require('express-fileupload');
 
 
 const app = express()
@@ -30,6 +31,7 @@ app.use(session({
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser());
+app.use(fileUpload());
 
 //config template engine
 configViewEngine(app)
@@ -44,6 +46,10 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user);
 });
+
+// set route for static file
+app.use('/public/images/upload', express.static(path.join(__dirname, '/public/images/upload')))
+
 
 app.use('/', webRoutes)
 
