@@ -45,9 +45,10 @@ const getAllUserService = async (req, res) => {
     }
 
 }
-const putUpdateUserService = async (id, name, phone, email, password, dateOfBirth, gender, role) => {
+const putUpdateUserService = async (id, userData) => {
     try {
-        let result = await User.updateOne({ _id: id }, { name, phone, email, password, dateOfBirth, gender, role });
+        let result = await User.updateOne({ _id: id }, { $set: userData });
+        console.log(">>>>>", result)
         return result;
     } catch (error) {
         console.log(error);

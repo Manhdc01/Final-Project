@@ -8,7 +8,7 @@ const movieSchema = new mongoose.Schema({
     },
     director: { type: String },
     performer: { type: String },
-    category: { type: String },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'category' },
     premiere: { type: Date },
     time: { type: Number },
     language: { type: String },

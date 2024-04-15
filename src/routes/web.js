@@ -6,12 +6,14 @@ const passport = require('passport')
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = require('../controllers/cinemaController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
-const { checkAdminPermission, checkCustomerPermission, checkStaffPermission, checkLoggedIn } = require('../middleware/authMiddleware')
+const { checkLoggedIn, checkRole } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending
     , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
-const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming } = require('../controllers/movieController')
-
+const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
+    getMovieTrailer } = require('../controllers/movieController')
+const { postCreateSeatPrice, getAllSeatPrice, putUpdateSeatPrice, deleteSeatPrice } = require('../controllers/seatPriceController')
+const { postCreateRoom, getAllRoom } = require('../controllers/roomController')
 
 routerAPI.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -45,7 +47,7 @@ routerAPI.get('/profile', getProfile)
 routerAPI.get('/users/sorted-ascending', getSortedUsersAscending);
 routerAPI.get('/users/sorted-descending', getSortedUsersDescending);
 
-routerAPI.get('/users/search', checkAdminPermission, searchUsersByName);
+routerAPI.get('/users/search', checkRole(['admin']), searchUsersByName);
 // routerAPI.get('/users', getAllUser)
 // routerAPI.post('/users', postCreateUser)
 // routerAPI.put('/users', putUpdateUser)
@@ -55,22 +57,33 @@ routerAPI.post('/create-users', postCreateUser);
 routerAPI.put('/update-users', putUpdateUser);
 routerAPI.delete('/delete-users/:id', deleteUser);
 
-routerAPI.get('/all-cinema', checkAdminPermission, getAllCinema)
-routerAPI.post('/create-cinema', checkAdminPermission, postCreateCinema)
-routerAPI.put('/update-cinema', checkAdminPermission, putUpdateCinema)
+routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)
+routerAPI.post('/create-cinema', checkRole(['admin']), postCreateCinema)
+routerAPI.put('/update-cinema', checkRole(['admin']), putUpdateCinema)
 routerAPI.delete('/delete-cinema/:id', deleteCinema)
 
-routerAPI.get('/all-category', checkAdminPermission, getAllCategory)
-routerAPI.post('/create-category', checkAdminPermission, postCreateCategory)
-routerAPI.put('/update-category', checkAdminPermission, putUpdateCategory)
-routerAPI.delete('/delete-category/:id', checkAdminPermission, deleteCategory)
+routerAPI.get('/all-category', checkRole(['admin']), getAllCategory)
+routerAPI.post('/create-category', checkRole(['admin']), postCreateCategory)
+routerAPI.put('/update-category', checkRole(['admin']), putUpdateCategory)
+routerAPI.delete('/delete-category/:id', checkRole(['admin']), deleteCategory)
 
-routerAPI.get('/all-movie', checkAdminPermission, getAllMovie)
-routerAPI.post('/create-movie', checkAdminPermission, postCreateMovie)
-routerAPI.put('/update-movie', checkAdminPermission, putupdateMovie)
-routerAPI.delete('/delete-movie/:id', checkAdminPermission, deleteMovie)
+routerAPI.get('/all-movie', checkRole(['admin']), getAllMovie)
+routerAPI.post('/create-movie', checkRole(['admin']), postCreateMovie)
+routerAPI.put('/update-movie', checkRole(['admin']), putupdateMovie)
+routerAPI.delete('/delete-movie/:id', checkRole(['admin']), deleteMovie)
 routerAPI.get('/movie-now-showing', getMovieNowShowing)
 routerAPI.get('/movie-upcoming', getMovieUpcoming)
+routerAPI.get('/movies/trailer/:movieId', getMovieTrailer);
+
+
+routerAPI.post('/add-seat-price', checkRole(['admin']), postCreateSeatPrice)
+routerAPI.get('/all-seat-price', checkRole(['admin']), getAllSeatPrice)
+routerAPI.put('/update-seat-price', checkRole(['admin']), putUpdateSeatPrice)
+routerAPI.delete('/delete-seat-price/:id', checkRole(['admin']), deleteSeatPrice)
+
+routerAPI.post('/create-room', checkRole(['admin']), postCreateRoom)
+routerAPI.get('/all-room', checkRole(['admin']), getAllRoom)
+
 
 
 

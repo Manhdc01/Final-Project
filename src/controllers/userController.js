@@ -49,12 +49,34 @@ const getAllUser = async (req, res) => {
 }
 
 const putUpdateUser = async (req, res) => {
-    const { id, name, phone, email, password, dateOfBirth, gender, role } = req.body;
-    let userUpdate = await putUpdateUserService(id, name, phone, email, password, dateOfBirth, gender, role);
-    return res.status(200).json({
-        errorCode: 0,
-        data: userUpdate
-    });
+    let { id, name, phone, email, password, dateOfBirth, gender, role } = req.body
+    let userData = { name, phone, email, password, dateOfBirth, gender, role }
+
+    let imageUploadResult = {}
+    if (!req.files || !req.files.image) {
+        console.log("No file uploaded");
+    } else {
+        let image = req.files.image;
+        let fileUploadResult = await uploadSingleFile(image);
+        let file_addr = fileUploadResult.path;
+        // console.log("Url image:", file_addr);
+        // upload to imgur
+        imageUploadResult = await uploadImage(file_addr);
+        // console.log(">>>>check", imageUploadResult)
+        userData.image = imageUploadResult.imageUrl
+        // remove file from local
+        try {
+            fs.unlinkSync(file_addr);
+        }
+        catch (err) {
+            console.log(err)
+        }
+        let userUpdate = await putUpdateUserService(id, userData);
+        return res.status(200).json({
+            errorCode: 0,
+            data: userUpdate
+        });
+    }
 }
 
 const deleteUser = async (req, res) => {
