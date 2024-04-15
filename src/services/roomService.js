@@ -6,7 +6,7 @@ const postCreateRoomService = async (roomData) => {
 }
 
 const getAllRoomService = async (req, res) => {
-    let result = await Room.find()
+    let result = await Room.find().populate('cinema')
     return result
 }
 
