@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
             password,
             dateOfBirth,
             gender,
-            role
+            role: role || "customer"
         };
 
         const register = await registerUserService(registerData);
