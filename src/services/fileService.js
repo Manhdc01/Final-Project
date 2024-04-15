@@ -4,7 +4,7 @@ const path = require('path');
 const uploadSingleFile = async (poster) => {
     let uploadPath = path.resolve(__dirname, "../public/images/upload");
 
-    let DOMAIN = process.env.DOMAIN || 'http://localhost:3000/public/images/upload/';
+    let DOMAIN = process.env.DOMAIN;
     let extName = path.extname(poster.name);
 
     let baseName = path.basename(poster.name, extName);
