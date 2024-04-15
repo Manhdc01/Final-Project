@@ -48,8 +48,7 @@ passport.deserializeUser((user, done) => {
 });
 
 // set route for static file
-app.use('/public/images/upload', express.static(path.join(__dirname, '/public/images/upload')))
-
+// app.use('/public/images/upload', express.static(path.join(__dirname, '/public/images/upload')))
 
 app.use('/', webRoutes)
 

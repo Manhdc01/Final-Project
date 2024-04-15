@@ -8,6 +8,7 @@ const createUserService = async (userData) => {
     try {
         let result = await User.create({
             name: userData.name,
+            image: userData.image,
             phone: userData.phone,
             email: userData.email,
             password: hashedPassword,
@@ -17,13 +18,13 @@ const createUserService = async (userData) => {
         });
         console.log(result);
         if (!result) {
-            console.error('Failed to create user')
-            return null
+            console.error('Failed to create user');
+            return null;
         } else {
-            return result
+            return result;
         }
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return null;
     }
 

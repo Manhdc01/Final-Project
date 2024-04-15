@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         maxLength: 255,
     },
+    image: {
+        type: String
+    },
     phone: {
         type: String,
         maxLength: 10

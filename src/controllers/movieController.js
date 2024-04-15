@@ -19,15 +19,15 @@ const postCreateMovie = async (req, res) => {
     } else {
         // Lưu file ảnh đến local
         let poster = req.files.poster;
-        console.log(poster)
+        // console.log(poster)
         let fileUploadResult = await uploadSingleFile(poster);
         let file_addr = fileUploadResult.path;
-        console.log("Url image:", file_addr);
+        // console.log("Url image:", file_addr);
         // upload to imgur
         imageUploadResult = await uploadImage(file_addr);
-        console.log(">>>>check", imageUploadResult)
+        // console.log(">>>>check", imageUploadResult)
         dataMovie.poster = imageUploadResult.imageUrl
-        console.log(dataMovie.poster)
+        // console.log(dataMovie.poster)
         // remove file from local
         try {
             fs.unlinkSync(file_addr);

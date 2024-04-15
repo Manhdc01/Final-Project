@@ -1,38 +1,38 @@
 const User = require('../models/user');
+const fs = require('fs')
 const { createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileService } = require('../services/userService')
+const { uploadSingleFile } = require('../services/fileService')
+const { uploadImage } = require('../services/movieService')
 
 const postCreateUser = async (req, res) => {
-    try {
-        const { name, phone, email, password, dateOfBirth, gender, role } = req.body
-        if (!name || !phone || !email || !password || !dateOfBirth || !gender || !role) {
-            return res.status(400).json({
-                errorCode: 1,
-                message: "Missing required fields"
-            });
+    let { name, phone, email, password, dateOfBirth, gender, role } = req.body
+    let userData = { name, phone, email, password, dateOfBirth, gender, role }
+    let image = req.files.image;
+    let imageUploadResult = {}
+    if (!req.files || !req.files.image) {
+        console.log("No file uploaded");
+    } else {
+        let fileUploadResult = await uploadSingleFile(image);
+        let file_addr = fileUploadResult.path;
+        // console.log("Url image:", file_addr);
+        // upload to imgur
+        imageUploadResult = await uploadImage(file_addr);
+        // console.log(">>>>check", imageUploadResult)
+        userData.image = imageUploadResult.imageUrl
+        // remove file from local
+        try {
+            fs.unlinkSync(file_addr);
         }
-        const userData = { name, phone, email, password, dateOfBirth, gender, role }
-
-        const user = await createUserService(userData)
-
-        if (!user) {
-            return res.status(500).json({
-                errorCode: 2,
-                message: "Failed to create user"
-            });
+        catch (err) {
+            console.log(err)
         }
 
+        let user = await createUserService(userData);
         return res.status(200).json({
             errorCode: 0,
             data: user
-        })
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            errorCode: 3,
-            message: "Internal server error"
         });
     }
-
 }
 
 const getAllUser = async (req, res) => {
