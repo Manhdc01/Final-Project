@@ -10,7 +10,7 @@ const configViewEngine = require('./config/viewEngine')
 const { loginWithGoogle } = require('./controllers/googleController')
 const connection = require('./config/database')
 const fileUpload = require('express-fileupload');
-const { sessionMiddleware } = require('./middleware/sessionMiddleware')
+const sessionMiddleware = require('./middleware/sessionMiddleware')
 
 
 const app = express()
@@ -29,7 +29,7 @@ app.use(fileUpload());
 
 //config template engine
 configViewEngine(app)
-sessionMiddleware(app)
+app.use(sessionMiddleware());
 loginWithGoogle()
 
 
