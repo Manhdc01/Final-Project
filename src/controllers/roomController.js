@@ -22,8 +22,8 @@ const getAllRoom = async (req, res) => {
         data: allRoom
     })
 }
-
 //update room
+
 
 
 module.exports = {

@@ -6,7 +6,7 @@ const passport = require('passport')
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = require('../controllers/cinemaController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
-const { checkLoggedIn, checkRole } = require('../middleware/authMiddleware')
+const { checkLoggedIn, checkRole, validateUserData } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending
     , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
@@ -35,7 +35,7 @@ routerAPI.get('/login', (req, res) => {
 
 routerAPI.post('/login', loginUser)//loginUser
 
-routerAPI.post('/register', registerUser)
+routerAPI.post('/register', validateUserData, registerUser)
 routerAPI.post('/refresh', requestAccessToken)
 routerAPI.post('/logout', checkLoggedIn, logOutUser)
 

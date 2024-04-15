@@ -1,17 +1,13 @@
 const { registerUserService, loginUserService, requestAccessTokenService, logOutUserService } = require('../services/authService')
-
+// https://imgur.com/a/WwtaR7M
 const registerUser = async (req, res) => {
     try {
         const { name, phone, email, password, dateOfBirth, gender, role } = req.body;
 
-        // Kiểm tra dữ liệu đầu vào
-        if (!email || !password || !role || !name || !phone || !dateOfBirth || !gender) {
-            return res.status(400).json({ errorCode: 400, message: "Missing required fields" });
-        }
-
         // Gọi hàm service để đăng ký người dùng
         const registerData = {
             name,
+            image: "https://imgur.com/a/WwtaR7M",
             phone,
             email,
             password,

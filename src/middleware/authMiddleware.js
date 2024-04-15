@@ -73,6 +73,24 @@ const checkRole = (roles) => {
         }
     }
 }
+const validateUserData = async (req, res, next) => {
+    const { email, password } = req.body;
+
+    // Kiểm tra độ dài của mật khẩu
+    if (password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+    }
+    // Kiểm tra xem email có đuôi @gmail.com hay không
+    if (!email.endsWith('@gmail.com')) {
+        return res.status(400).json({ error: 'Email must end with @gmail.com.' });
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(400).json({ error: 'Email is already registered.' });
+    }
+    // Nếu mọi thứ đều hợp lệ, tiếp tục xử lý yêu cầu
+    next();
+};
 module.exports = {
-    checkLoggedIn, checkRole
+    checkLoggedIn, checkRole, validateUserData
 };
