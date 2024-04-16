@@ -37,7 +37,7 @@ routerAPI.get('/login', (req, res) => {
 routerAPI.post('/login', loginUser)//loginUser
 
 routerAPI.post('/register', validateUserData, registerUser)
-routerAPI.post('/refresh', requestAccessToken)
+// routerAPI.post('/refresh', requestAccessToken)
 routerAPI.post('/logout', checkLoggedIn, logOutUser)
 
 routerAPI.post('/change-password', checkLoggedIn, changePassword)
