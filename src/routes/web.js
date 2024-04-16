@@ -16,18 +16,18 @@ const { postCreateSeatPrice, getAllSeatPrice, putUpdateSeatPrice, deleteSeatPric
 const { postCreateRoom, getAllRoom } = require('../controllers/roomController')
 const { postCreateShowTime, getAllShowTime } = require('../controllers/showTimeController')
 
-routerAPI.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] }));
+// routerAPI.get('/auth/google',
+//     passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-routerAPI.get('/google/redirect',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    function (req, res) {
-        const { user, accessToken } = req.user;
-        res.status(200).json({
-            user: user,
-            accessToken: accessToken
-        });
-    });
+// routerAPI.get('/google/redirect',
+//     passport.authenticate('google', { failureRedirect: '/login' }),
+//     function (req, res) {
+//         const { user, accessToken } = req.user;
+//         res.status(200).json({
+//             user: user,
+//             accessToken: accessToken
+//         });
+//     });
 
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')

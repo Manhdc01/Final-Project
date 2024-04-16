@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const webRoutes = require('./routes/web')
 const path = require('path')
 const configViewEngine = require('./config/viewEngine')
-const { loginWithGoogle } = require('./controllers/googleController')
+// const { loginWithGoogle } = require('./controllers/googleController')
 const connection = require('./config/database')
 const fileUpload = require('express-fileupload');
 const sessionMiddleware = require('./middleware/sessionMiddleware')
@@ -29,18 +29,18 @@ app.use(fileUpload());
 
 //config template engine
 configViewEngine(app)
-app.use(sessionMiddleware());
-loginWithGoogle()
+// app.use(sessionMiddleware());
+// loginWithGoogle()
 
 
 // Cấu hình serialize và deserialize user
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
+// passport.serializeUser((user, done) => {
+//     done(null, user);
+// });
 
-passport.deserializeUser((user, done) => {
-    done(null, user);
-});
+// passport.deserializeUser((user, done) => {
+//     done(null, user);
+// });
 
 
 app.use('/', webRoutes)
