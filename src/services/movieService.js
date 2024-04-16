@@ -95,8 +95,9 @@ const getMovieUpcomingService = async () => {
 
 const uploadImage = async (imagePath) => {
     try {
+        const file = fs.readFileSync(imagePath);
         const formData = new FormData();
-        formData.append('image', fs.createReadStream(imagePath)); // Sử dụng createReadStream để đọc file
+        formData.append('image', file, { filename: 'image' });
 
         const response = await axios.post('https://api.imgur.com/3/image', formData, {
             headers: {
