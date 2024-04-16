@@ -7,12 +7,12 @@ const { uploadImage } = require('../services/movieService')
 const postCreateUser = async (req, res) => {
     let { name, phone, email, password, dateOfBirth, gender, role } = req.body
     let userData = { name, phone, email, password, dateOfBirth, gender, role }
-    let image = req.files.image;
     let imageUploadResult = {}
     if (!req.files || !req.files.image) {
         console.log("No file uploaded");
     } else {
-        let fileUploadResult = await uploadSingleFile(image);
+        let file_dir = req.files.image;
+        let fileUploadResult = await uploadSingleFile(file_dir);
         let file_addr = fileUploadResult.path;
         // console.log("Url image:", file_addr);
         // upload to imgur

@@ -1,20 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const uploadSingleFile = async (poster) => {
+const uploadSingleFile = async (fileObject) => {
     let uploadPath = path.resolve(__dirname, "../public/images/upload");
 
-    // let DOMAIN = process.env.DOMAIN;
-    let extName = path.extname(poster.name);
+    let extName = path.extname(fileObject.name);
 
-    let baseName = path.basename(poster.name, extName);
+    let baseName = path.basename(fileObject.name, extName);
 
     let finalName = `${baseName}-${Date.now()}${extName}`
     let finalPath = `${uploadPath}/${finalName}`;
 
-    // let url_file = `${DOMAIN}${finalName}`;
     try {
-        await poster.mv(finalPath);
+        await fileObject.mv(finalPath);
         return {
             status: 'success',
             path: finalPath,
