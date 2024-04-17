@@ -15,7 +15,7 @@ const getAllMovie = async (req, res) => {
         const totalMovies = await Movie.countDocuments();
 
         // Lấy danh sách người dùng theo trang và giới hạn
-        const movieList = await Movie.find().skip(skip).limit(limit);
+        const movieList = await Movie.find().populate('category').skip(skip).limit(limit);
 
         // Tính tổng số trang
         const totalPages = Math.ceil(totalMovies / limit);
