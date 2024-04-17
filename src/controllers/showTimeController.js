@@ -18,11 +18,26 @@ const postCreateShowTime = async (req, res) => {
 }
 
 const getAllShowTime = async (req, res) => {
-    let showTime = await getAllShowTimeService()
-    res.status(200).json({
-        success: true,
-        data: showTime
-    })
+    try {
+        const page = req.query.page || 1; // Trang mặc định là 1 nếu không có trang được chỉ định
+        const limit = 5; // Số lượng người dùng trên mỗi trang
+
+        const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
+
+        // Lấy tổng số người dùng
+        const totalShowTime = await Movie.countDocuments();
+
+        // Lấy danh sách người dùng theo trang và giới hạn
+        const showTimeList = await Movie.find().populate('movie').populate('cinema').populate('room').skip(skip).limit(limit);
+
+        // Tính tổng số trang
+        const totalPages = Math.ceil(totalShowTime / limit);
+
+        return res.status(200).json({ errorCode: 0, data: showTimeList, totalPages, currentPage: page });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ errorCode: 1, message: "Internal server error" });
+    }
 }
 
 const updateShowTime = async (req, res) => {
@@ -50,6 +65,7 @@ const deleteShowTime = async (req, res) => {
         data: showTime
     })
 }
+
 
 module.exports = {
     postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime
