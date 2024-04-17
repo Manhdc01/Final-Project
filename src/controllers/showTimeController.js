@@ -1,3 +1,4 @@
+const ShowTime = require('../models/showtime')
 const { postCreateShowTimeService, getAllShowTimeService, updateShowTimeService, deleteShowTimeService } = require('../services/showTimeService')
 //create showTime
 const postCreateShowTime = async (req, res) => {
@@ -25,10 +26,10 @@ const getAllShowTime = async (req, res) => {
         const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
 
         // Lấy tổng số người dùng
-        const totalShowTime = await Movie.countDocuments();
+        const totalShowTime = await ShowTime.countDocuments();
 
         // Lấy danh sách người dùng theo trang và giới hạn
-        const showTimeList = await Movie.find().populate('movie').populate('cinema').populate('room').skip(skip).limit(limit);
+        const showTimeList = await ShowTime.find().populate('MovieID').populate('CinemaID').populate('RoomID').skip(skip).limit(limit);
 
         // Tính tổng số trang
         const totalPages = Math.ceil(totalShowTime / limit);
