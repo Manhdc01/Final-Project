@@ -37,11 +37,21 @@ const postCreateUser = async (req, res) => {
 
 const getAllUser = async (req, res) => {
     try {
-        let userList = await getAllUserService();
-        if (!userList) {
-            return res.status(500).json({ errorCode: 1, message: "Failed to retrieve user data" });
-        }
-        return res.status(200).json({ errorCode: 0, data: userList });
+        const page = req.query.page || 1; // Trang mặc định là 1 nếu không có trang được chỉ định
+        const limit = 5; // Số lượng người dùng trên mỗi trang
+
+        const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
+
+        // Lấy tổng số người dùng
+        const totalUsers = await User.countDocuments();
+
+        // Lấy danh sách người dùng theo trang và giới hạn
+        const userList = await User.find().skip(skip).limit(limit);
+
+        // Tính tổng số trang
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        return res.status(200).json({ errorCode: 0, data: userList, totalPages, currentPage: page });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ errorCode: 1, message: "Internal server error" });
