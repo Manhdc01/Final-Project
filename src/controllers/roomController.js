@@ -1,10 +1,11 @@
 const { postCreateRoomService, getAllRoomService } = require('../services/roomService')
 //create room
 const postCreateRoom = async (req, res) => {
-    let { name, cinema } = req.body
+    let { cinema, name, totalSeats } = req.body
     let roomData = {
         name,
         cinema,
+        totalSeats
     }
     let room = await postCreateRoomService(roomData)
 
@@ -23,9 +24,6 @@ const getAllRoom = async (req, res) => {
     })
 }
 //update room
-
-
-
 module.exports = {
     postCreateRoom, getAllRoom
 }

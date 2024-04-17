@@ -14,7 +14,7 @@ const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowSh
     getMovieTrailer, searchMovieByName } = require('../controllers/movieController')
 const { postCreateSeatPrice, getAllSeatPrice, putUpdateSeatPrice, deleteSeatPrice } = require('../controllers/seatPriceController')
 const { postCreateRoom, getAllRoom } = require('../controllers/roomController')
-const { postCreateShowTime, getAllShowTime } = require('../controllers/showTimeController')
+const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime } = require('../controllers/showTimeController')
 
 // routerAPI.get('/auth/google',
 //     passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -88,12 +88,8 @@ routerAPI.get('/all-room', checkRole(['admin']), getAllRoom)
 
 routerAPI.post('/create-show-time', checkRole(['admin']), postCreateShowTime)
 routerAPI.get('/all-show-time', checkRole(['admin']), getAllShowTime)
-
-
-
-
-
-
+routerAPI.put('/update-show-time', checkRole(['admin']), updateShowTime)
+routerAPI.delete('/delete-show-time', checkRole(['admin']), deleteShowTime)
 
 
 module.exports = routerAPI
