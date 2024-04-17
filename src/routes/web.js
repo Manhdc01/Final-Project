@@ -53,10 +53,10 @@ routerAPI.get('/users/search', checkRole(['admin']), searchUsersByName);
 // routerAPI.post('/users', postCreateUser)
 // routerAPI.put('/users', putUpdateUser)
 // routerAPI.delete('/users', deleteUser)
-routerAPI.get('/all-users', getAllUser);
-routerAPI.post('/create-users', postCreateUser);
-routerAPI.put('/update-users', putUpdateUser);
-routerAPI.delete('/delete-users/:id', deleteUser);
+routerAPI.get('/all-users', checkRole(['admin']), getAllUser);
+routerAPI.post('/create-users', checkRole(['admin']), postCreateUser);
+routerAPI.put('/update-users', checkRole(['admin']), putUpdateUser);
+routerAPI.delete('/delete-users/:id', checkRole(['admin']), deleteUser);
 
 routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)
 routerAPI.post('/create-cinema', checkRole(['admin']), postCreateCinema)
