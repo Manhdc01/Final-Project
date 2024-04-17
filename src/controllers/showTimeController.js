@@ -67,6 +67,16 @@ const deleteShowTime = async (req, res) => {
     })
 }
 
+const getShowTimeById = async (req, res) => {
+    let { id } = req.body
+    let showTime = await ShowTime.findById(id)
+    res
+        .status(200)
+        .json({
+            success: true,
+            data: showTime
+        })
+}
 
 module.exports = {
     postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime
