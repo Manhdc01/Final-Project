@@ -1,10 +1,11 @@
 const { model } = require("mongoose")
+require('dotenv').config()
 const Movie = require("../models/movie")
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const Category = require("../models/category");
-const CLIENT_ID = '45baff75e010a0d';
+
 
 const postCreateMovieService = async (dataMovie) => {
     try {
@@ -101,7 +102,7 @@ const uploadImage = async (imagePath) => {
 
         const response = await axios.post('https://api.imgur.com/3/image', formData, {
             headers: {
-                Authorization: `Client-ID ${CLIENT_ID}`,
+                Authorization: `Client-ID ${process.env.CLIENT_ID}`,
                 ...formData.getHeaders()
             }
         });
