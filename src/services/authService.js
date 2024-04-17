@@ -30,7 +30,7 @@ const registerUserService = async (registerData, defaultRole = 'customer') => {
 }
 //Generate access token
 const generateAccessToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+    return jwt.sign({ id: userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
 };
 //Generate refresh token
 const generateRefreshToken = (userId) => {

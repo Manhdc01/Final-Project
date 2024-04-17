@@ -7,7 +7,7 @@ const registerUser = async (req, res) => {
         // Gọi hàm service để đăng ký người dùng
         const registerData = {
             name,
-            image: "https://imgur.com/a/WwtaR7M",
+            image: "https://www.i2clipart.com/cliparts/6/e/a/5/clipart-user-3-512x512-6ea5.png",
             phone,
             email,
             password,
