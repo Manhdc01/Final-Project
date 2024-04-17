@@ -11,7 +11,7 @@ const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSo
     , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
 const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
-    getMovieTrailer } = require('../controllers/movieController')
+    getMovieTrailer, searchMovieByName } = require('../controllers/movieController')
 const { postCreateSeatPrice, getAllSeatPrice, putUpdateSeatPrice, deleteSeatPrice } = require('../controllers/seatPriceController')
 const { postCreateRoom, getAllRoom } = require('../controllers/roomController')
 const { postCreateShowTime, getAllShowTime } = require('../controllers/showTimeController')
@@ -75,6 +75,7 @@ routerAPI.delete('/delete-movie/:id', checkRole(['admin']), deleteMovie)
 routerAPI.get('/movie-now-showing', getMovieNowShowing)
 routerAPI.get('/movie-upcoming', getMovieUpcoming)
 routerAPI.get('/movies/trailer/:movieId', getMovieTrailer);
+routerAPI.get('/search-movie', checkRole(['admin']), searchMovieByName)
 
 
 routerAPI.post('/add-seat-price', checkRole(['admin']), postCreateSeatPrice)

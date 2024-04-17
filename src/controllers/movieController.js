@@ -1,14 +1,30 @@
 const { postCreateMovieService, getAllMovieService, putUpdateMovieService, deleteMovieService, getMovieNowShowingService, getMovieUpcomingService,
     uploadImage, getMovieTrailerService } = require('../services/movieService')
 const { uploadSingleFile } = require('../services/fileService')
-const fs = require('fs')
+const fs = require('fs');
+const Movie = require('../models/movie');
 
 const getAllMovie = async (req, res) => {
-    let movie = await getAllMovieService()
-    return res.status(200).json({
-        errorCode: 0,
-        data: movie
-    })
+    try {
+        const page = req.query.page || 1; // Trang mặc định là 1 nếu không có trang được chỉ định
+        const limit = 5; // Số lượng người dùng trên mỗi trang
+
+        const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
+
+        // Lấy tổng số người dùng
+        const totalMovies = await Movie.countDocuments();
+
+        // Lấy danh sách người dùng theo trang và giới hạn
+        const movieList = await Movie.find().skip(skip).limit(limit);
+
+        // Tính tổng số trang
+        const totalPages = Math.ceil(totalMovies / limit);
+
+        return res.status(200).json({ errorCode: 0, data: movieList, totalPages, currentPage: page });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ errorCode: 1, message: "Internal server error" });
+    }
 }
 const postCreateMovie = async (req, res) => {
     let { name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body;
@@ -121,6 +137,15 @@ const getMovieTrailer = async (req, res) => {
         });
     }
 }
+const searchMovieByName = async (req, res) => {
+    let name = req.query.name
+    let movie = await Movie.find({ name: { $regex: name, $options: 'i' } })
+    return res.status(200).json({
+        errorCode: 0,
+        data: movie
+    })
+}
 module.exports = {
-    getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming, getMovieTrailer
+    getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming, getMovieTrailer,
+    searchMovieByName
 }
