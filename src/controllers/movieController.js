@@ -138,12 +138,15 @@ const getMovieTrailer = async (req, res) => {
     }
 }
 const searchMovieByName = async (req, res) => {
-    let name = req.query.name
-    let movie = await Movie.find({ name: { $regex: name, $options: 'i' } })
-    return res.status(200).json({
-        errorCode: 0,
-        data: movie
-    })
+    try {
+        const { name } = req.query;
+        const regex = new RegExp(name, 'i'); // 'i' to search case-insensitively
+        const users = await Movie.find({ name: { $regex: regex } });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error while searching users by name:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 }
 module.exports = {
     getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming, getMovieTrailer,
