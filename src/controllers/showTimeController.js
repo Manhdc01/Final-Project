@@ -2,11 +2,11 @@ const ShowTime = require('../models/showtime')
 const { postCreateShowTimeService, getAllShowTimeService, updateShowTimeService, deleteShowTimeService } = require('../services/showTimeService')
 //create showTime
 const postCreateShowTime = async (req, res) => {
-    let { CinemaID, MovieID, RoomID, startDate, endDate, times } = req.body
+    let { cinema, movie, room, startDate, endDate, times } = req.body
     let showTimeData = {
-        CinemaID,
-        MovieID,
-        RoomID,
+        cinema,
+        movie,
+        room,
         startDate,
         endDate,
         times
@@ -29,7 +29,7 @@ const getAllShowTime = async (req, res) => {
         const totalShowTime = await ShowTime.countDocuments();
 
         // Lấy danh sách người dùng theo trang và giới hạn
-        const showTimeList = await ShowTime.find().populate('MovieID').populate('CinemaID').populate('RoomID').skip(skip).limit(limit);
+        const showTimeList = await ShowTime.find().populate('movie').populate('cinema').populate('room').skip(skip).limit(limit);
 
         // Tính tổng số trang
         const totalPages = Math.ceil(totalShowTime / limit);
@@ -42,11 +42,11 @@ const getAllShowTime = async (req, res) => {
 }
 
 const updateShowTime = async (req, res) => {
-    let { id, CinemaID, MovieID, RoomID, startDate, endDate, times } = req.body
+    let { id, cinema, movie, room, startDate, endDate, times } = req.body
     let showTimeData = {
-        CinemaID,
-        MovieID,
-        RoomID,
+        cinema,
+        movie,
+        room,
         startDate,
         endDate,
         times
@@ -59,7 +59,7 @@ const updateShowTime = async (req, res) => {
 }
 
 const deleteShowTime = async (req, res) => {
-    let { id } = req.body
+    let id = req.body.id
     let showTime = await deleteShowTimeService(id)
     res.status(200).json({
         success: true,

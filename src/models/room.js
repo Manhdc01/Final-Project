@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // Định nghĩa schema cho phòng chiếu
 const roomSchema = new mongoose.Schema({
-    CinemaID: {
+    cinema: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'cinema',
         required: true
