@@ -17,10 +17,14 @@ const app = express()
 const port = process.env.PORT || 8888//port
 const hostname = process.env.HOST_NAME
 
-
-app.use(cors({
-    origin: '*'
-}))
+// Set up CORS
+const corsOptions = {
+    origin: '*', // Allow requests from any origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow all HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Add allowed headers as needed
+    credentials: true, // Allow cookies and credentials to be sent
+};
+app.use(cors(corsOptions))
 //config req.body
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
