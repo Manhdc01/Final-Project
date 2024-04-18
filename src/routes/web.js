@@ -89,7 +89,7 @@ routerAPI.get('/all-room', checkRole(['admin']), getAllRoom)
 routerAPI.post('/create-show-time', checkRole(['admin']), postCreateShowTime)
 routerAPI.get('/all-show-time', checkRole(['admin']), getAllShowTime)
 routerAPI.put('/update-show-time', checkRole(['admin']), updateShowTime)
-routerAPI.delete('/delete-show-time', checkRole(['admin']), deleteShowTime)
+routerAPI.delete('/delete-show-time/:id', checkRole(['admin']), deleteShowTime)
 
 
 module.exports = routerAPI
