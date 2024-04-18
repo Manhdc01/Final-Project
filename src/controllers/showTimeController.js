@@ -59,7 +59,7 @@ const updateShowTime = async (req, res) => {
 }
 
 const deleteShowTime = async (req, res) => {
-    let id = req.body.id
+    let id = req.params.id
     let showTime = await deleteShowTimeService(id)
     res.status(200).json({
         success: true,
