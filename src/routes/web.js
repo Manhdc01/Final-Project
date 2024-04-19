@@ -11,10 +11,11 @@ const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSo
     , searchUsersByName } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
 const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
-    getMovieTrailer, searchMovieByName } = require('../controllers/movieController')
+    getMovieTrailer, searchMovieByName, getMovieById } = require('../controllers/movieController')
 const { postCreateSeatPrice, getAllSeatPrice, putUpdateSeatPrice, deleteSeatPrice } = require('../controllers/seatPriceController')
 const { postCreateRoom, getAllRoom } = require('../controllers/roomController')
-const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime } = require('../controllers/showTimeController')
+const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
+    showTimeByDate } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
 
 // routerAPI.get('/auth/google',
@@ -77,6 +78,7 @@ routerAPI.get('/movie-now-showing', getMovieNowShowing)
 routerAPI.get('/movie-upcoming', getMovieUpcoming)
 routerAPI.get('/movies/trailer/:movieId', getMovieTrailer);
 routerAPI.get('/search-movie', checkRole(['admin']), searchMovieByName)
+routerAPI.get('/find-movie-by-id/:id', checkRole(['admin']), getMovieById)
 
 
 routerAPI.post('/add-seat-price', checkRole(['admin']), postCreateSeatPrice)
@@ -91,6 +93,7 @@ routerAPI.post('/create-show-time', checkRole(['admin']), postCreateShowTime)
 routerAPI.get('/all-show-time', checkRole(['admin']), getAllShowTime)
 routerAPI.put('/update-show-time', checkRole(['admin']), updateShowTime)
 routerAPI.delete('/delete-show-time/:id', checkRole(['admin']), deleteShowTime)
+routerAPI.get('/showtime/all-dates', checkRole(['admin']), showTimeByDate)
 
 routerAPI.post('/add-food', checkRole(['admin']), addFood)
 routerAPI.get('/all-food', checkRole(['admin']), getAllFood)

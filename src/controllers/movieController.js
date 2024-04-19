@@ -148,7 +148,19 @@ const searchMovieByName = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
+const getMovieById = async (req, res) => {
+    try {
+        let id = req.params.id;
+        const movie = await Movie.findOne({ _id: id });
+        res.status(200).json(movie);
+    } catch (error) {
+        console.error("Error while getting movie by id:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 module.exports = {
     getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming, getMovieTrailer,
-    searchMovieByName
+    searchMovieByName, getMovieById
 }

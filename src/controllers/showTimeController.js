@@ -66,8 +66,42 @@ const deleteShowTime = async (req, res) => {
         data: showTime
     })
 }
+const showTimeByDate = async (req, res) => {
+    try {
+        const showTimes = await ShowTime.find()
+            .populate('movie')
+            .populate('room');
 
+        const dailyShowTimes = {};
+
+        showTimes.forEach(showTime => {
+            const startDate = new Date(showTime.startDate);
+            const endDate = new Date(showTime.endDate);
+
+            // Tạo một danh sách các ngày từ startDate đến endDate
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                const dateKey = d.toISOString().split('T')[0];
+                if (!dailyShowTimes[dateKey]) {
+                    dailyShowTimes[dateKey] = [];
+                }
+
+                // Thêm suất chiếu vào mỗi ngày phù hợp
+                dailyShowTimes[dateKey].push({
+                    id: showTime._id,
+                    times: showTime.times,
+                    movie: showTime.movie.name, // Trả về tên phim
+                    room: showTime.room.name // Trả về tên phòng chiếu
+                });
+            }
+        });
+
+        res.json(dailyShowTimes);
+    } catch (error) {
+        console.error('Error fetching showtimes for all dates:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 module.exports = {
-    postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime
+    postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime, showTimeByDate
 }
 
