@@ -10,10 +10,13 @@ const getAllCinema = async (req, res) => {
 }
 
 const postCreateCinema = async (req, res) => {
-    let { name, location } = req.body
+    let { name, province, district, commune, address } = req.body
     let cinemaData = {
         name,
-        location
+        province,
+        district,
+        commune,
+        address
     }
     let cinema = await postCreateCinemaService(cinemaData)
 
@@ -24,8 +27,8 @@ const postCreateCinema = async (req, res) => {
 }
 
 const putUpdateCinema = async (req, res) => {
-    let { id, name, location } = req.body
-    let cinema = await putUpdateCinemaService(id, name, location)
+    let { id, name, province, district, commune, address } = req.body
+    let cinema = await putUpdateCinemaService(id, name, province, district, commune, address)
     return res.status(200).json({
         errorCode: 0,
         data: cinema
