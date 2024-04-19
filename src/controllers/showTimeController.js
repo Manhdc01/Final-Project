@@ -70,7 +70,8 @@ const showTimeByDate = async (req, res) => {
     try {
         const showTimes = await ShowTime.find()
             .populate('movie')
-            .populate('room');
+            .populate('room')
+            .populate('cinema');
 
         const dailyShowTimes = {};
 
@@ -90,7 +91,8 @@ const showTimeByDate = async (req, res) => {
                     id: showTime._id,
                     times: showTime.times,
                     movie: showTime.movie.name, // Trả về tên phim
-                    room: showTime.room.name // Trả về tên phòng chiếu
+                    room: showTime.room.name, // Trả về tên phòng chiếu
+                    cinema: showTime.cinema.name // Trả về tên rạp
                 });
             }
         });
