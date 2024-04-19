@@ -95,7 +95,7 @@ const showTimeByDate = async (req, res) => {
             }
         });
 
-        res.json(dailyShowTimes);
+        res.json({ data: dailyShowTimes });
     } catch (error) {
         console.error('Error fetching showtimes for all dates:', error);
         res.status(500).json({ error: 'Internal server error' });
