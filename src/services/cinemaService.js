@@ -2,19 +2,29 @@ const { model } = require("mongoose")
 const Cinema = require('../models/cinema')
 const postCreateCinemaService = async (cinemaData) => {
     try {
-        let result = await Cinema.create(
-            {
+        // Kiểm tra xem rạp có tồn tại trong cơ sở dữ liệu chưa
+        const existingCinema = await Cinema.findOne({ name: cinemaData.name });
+
+        if (existingCinema) {
+            // Nếu rạp đã tồn tại, trả về thông báo lỗi
+            return { success: false, message: 'The cinema name already exists' };
+        } else {
+            // Nếu rạp chưa tồn tại, tạo mới và lưu vào cơ sở dữ liệu
+            const result = await Cinema.create({
                 name: cinemaData.name,
                 province: cinemaData.province,
                 district: cinemaData.district,
                 commune: cinemaData.commune,
                 address: cinemaData.address
-            }
-        )
-        return result
+            });
+
+            // Trả về kết quả thành công
+            return { success: true, data: result };
+        }
     } catch (error) {
-        console.log(error)
-        return null
+        console.log(error);
+        // Nếu có lỗi xảy ra, trả về thông báo lỗi
+        return { success: false, message: 'Đã xảy ra lỗi khi tạo rạp.' };
     }
 }
 const getAllCinemaService = async () => {
