@@ -86,6 +86,7 @@ const requestAccessTokenService = (req, res) => {
 const logOutUserService = (req, res) => {
     try {
         res.clearCookie("refreshToken"); // Xóa cookie refreshToken khi đăng xuất
+        localStorage.removeItem('accessToken');
         res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
         console.error(error);
