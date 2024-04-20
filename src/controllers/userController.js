@@ -6,6 +6,14 @@ const { uploadImage } = require('../services/movieService')
 
 const postCreateUser = async (req, res) => {
     let { name, phone, email, password, dateOfBirth, gender, role } = req.body
+    // check email exists
+    const existingUser = await User.findOne({ email: email });
+    if (existingUser) {
+        return res.status(400).json({
+            errorCode: 1,
+            message: "Email already exists"
+        });
+    }
     let userData = { name, phone, email, password, dateOfBirth, gender, role }
     let imageUploadResult = {}
     if (!req.files || !req.files.image) {
