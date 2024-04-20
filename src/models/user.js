@@ -40,6 +40,9 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
     },
+    accessToken: {
+        type: String,
+    },
     resetToken: {
         type: String,
     },

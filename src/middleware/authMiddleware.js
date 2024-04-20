@@ -5,36 +5,25 @@ const User = require('../models/user')
 const checkLoggedIn = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(" ")[1];
-
-        // Kiểm tra xem token có tồn tại không
         if (!token) {
-            return res.status(403).json({
-                message: "You are not logged in"
-            });
+            return res.status(401).json({ message: "JWT must be provided" });
         }
-
-        // Xác thực token và lấy thông tin người dùng
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        const user = await User.findById(decoded.id);
-
-        // Kiểm tra xem người dùng có tồn tại không
+        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const user = await User.findById(payload.userId);
         if (!user) {
-            return res.status(403).json({
-                message: "Token invalid"
+            return res.status(404).json({
+                errorCode: 404,
+                message: "User not found"
             });
         }
-
-        // Lưu thông tin người dùng vào req.user
-        req.user = user;
-
-        // Nếu người dùng hợp lệ, cho phép tiếp tục xử lý yêu cầu
-        next();
-    } catch (error) {
-        // Xử lý lỗi nếu có
+        req.user = user
+        next()
+    }
+    catch (error) {
         console.error(error);
         return res.status(500).json({
-            name: error.name,
-            message: error.message
+            errorCode: 500,
+            message: "Internal server error"
         });
     }
 };
@@ -42,34 +31,31 @@ const checkLoggedIn = async (req, res, next) => {
 const checkRole = (roles) => {
     return async (req, res, next) => {
         try {
-            const token = req.headers.authorization?.split(" ")[1]
-
-            if (!token) {
-                return res.status(403).json({
-                    message: "You are not yet logged in"
-                })
-            }
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-            const user = await User.findById(decoded.id)
-
+            const token = req.headers.authorization.split(" ")[1];
+            const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const user = await User.findById(payload.userId);
             if (!user) {
+                return res.status(404).json({
+                    errorCode: 404,
+                    message: "User not found"
+                });
+            }
+            if (roles.includes(user.role)) {
+                req.user = user
+                next()
+            }
+            else {
                 return res.status(403).json({
-                    message: "Token invalid"
-                })
+                    errorCode: 403,
+                    message: "Forbidden"
+                });
             }
-
-            if (!roles.includes(user.role)) {
-                return res.status(400).json({
-                    message: "You have no rights"
-                })
-            }
-
-            next()
         } catch (error) {
-            return res.json({
-                name: error.name,
-                message: error.message
-            })
+            console.error(error);
+            return res.status(500).json({
+                errorCode: 500,
+                message: "Internal server error"
+            });
         }
     }
 }

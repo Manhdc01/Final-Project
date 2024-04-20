@@ -1,5 +1,8 @@
-const { registerUserService, loginUserService, requestAccessTokenService, logOutUserService } = require('../services/authService')
-// https://imgur.com/a/WwtaR7M
+const User = require('../models/user');
+const { registerUserService, requestAccessTokenService } = require('../services/authService')
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const registerUser = async (req, res) => {
     try {
         const { name, phone, email, password, dateOfBirth, gender, role } = req.body;
@@ -47,32 +50,36 @@ const loginUser = async (req, res) => {
         const email = req.body.email
         const password = req.body.password
 
-        const loginResult = await loginUserService(email, password);
-
-        if (!loginResult || !loginResult.accessToken) {
-            // Không có kết quả hoặc accessToken không tồn tại
-            return res.status(300).json({
-                errorCode: 300,
-                message: "Wrong email or password"
+        // Tìm user dựa trên email
+        const user = await User.findOne({ email: email })
+        if (!user) {
+            return res.status(404).json({
+                errorCode: 404,
+                message: "User not found"
             });
         }
-
-        const { accessToken, refreshToken, user } = loginResult;
-
-        // Set refresh token in a cookie
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: false,
-            path: "/",
-            sameSite: "strict"
-        });
-        // storeAccessToken(accessToken, refreshToken, 10, user.id)
-        // storeRefreshToken(refreshToken, accessToken, 100, user.id)
-        // Login success!
+        // So sánh password
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return res.status(400).json({
+                errorCode: 400,
+                message: "Invalid password"
+            });
+        }
+        // Tạo token
+        const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET);
+        // Lưu token vào user
+        user.accessToken = accessToken;
+        await user.save();
+        // Trả về kết quả thành công
         return res.status(200).json({
             errorCode: 0,
-            data: { user, accessToken }
+            data: {
+                user: user,
+                accessToken: accessToken
+            }
         });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({
@@ -91,12 +98,21 @@ const requestAccessToken = (req, res) => {
     }
 };
 
-const logOutUser = (req, res) => {
+const logOutUser = async (req, res) => {
     try {
-        logOutUserService(req, res); // Gọi hàm từ service để đăng xuất
+        const user = req.user;
+        user.accessToken = null;
+        await user.save();
+        return res.status(200).json({
+            errorCode: 0,
+            message: "Logout successfully"
+        });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({
+            errorCode: 500,
+            message: "Internal server error"
+        });
     }
 };
 module.exports = {

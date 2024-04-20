@@ -156,7 +156,7 @@ const getProfileByToken = async (req, res) => {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         console.log(decoded)
         // Lấy id của người dùng từ decoded token
-        const id = decoded.id;
+        const id = decoded.userId; // Thay đổi từ 'id' sang 'userId'
         // Gọi service để lấy thông tin profile dựa trên userId
         const userProfile = await getProfileByTokenService(id);
         console.log(userProfile)

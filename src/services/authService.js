@@ -37,23 +37,21 @@ const generateRefreshToken = (userId) => {
     return jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "365d" });
 };
 
-const loginUserService = async (email, password) => {
+const logout = async (req, res) => {
     try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return null; // User not found
-        }
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) {
-            return null; // Wrong password
-        }
-        const accessToken = generateAccessToken(user.id);
-        const refreshToken = generateRefreshToken(user.id);
-
-        return { user, accessToken, refreshToken };
+        const user = req.user;
+        user.accessToken = null;
+        await user.save();
+        return res.status(200).json({
+            errorCode: 0,
+            message: "Logout successfully"
+        });
     } catch (error) {
         console.error(error);
-        return { user: null, accessToken: null, refreshToken: null };
+        return res.status(500).json({
+            errorCode: 500,
+            message: "Internal server error"
+        });
     }
 }
 
@@ -182,7 +180,7 @@ const resetPasswordService = async (token, newPassword) => {
 
 
 module.exports = {
-    registerUserService, loginUserService, requestAccessTokenService, logOutUserService, changePasswordService,
+    registerUserService, requestAccessTokenService, logOutUserService, changePasswordService,
     sendResetEmail, resetPasswordService,
     generateAccessToken, generateRefreshToken//upsert is update and insert
 }
