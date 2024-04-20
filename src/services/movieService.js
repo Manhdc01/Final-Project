@@ -6,7 +6,6 @@ const FormData = require('form-data');
 const fs = require('fs');
 const Category = require("../models/category");
 
-
 const postCreateMovieService = async (dataMovie) => {
     try {
         // Kiểm tra xem tên phim đã tồn tại trong cơ sở dữ liệu chưa

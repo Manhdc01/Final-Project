@@ -64,28 +64,26 @@ const deleteUserService = async (userId) => {
         return null;
     }
 }
-const getProfileService = async (id) => {
+const getProfileByTokenService = async (id) => {
     try {
-        const user = await User.findById(id);
-        if (!user) {
-            return null;
+        // Tìm thông tin profile dựa trên userId
+        const userProfile = await User.findOne({ _id: id }).select('image name email dateOfBirth gender');
+
+        // Kiểm tra xem profile có tồn tại không
+        if (!userProfile) {
+            console.log(`User profile not found for user with ID ${id}`);
         }
 
-        return {
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            dateOfBirth: user.dateOfBirth,
-            gender: user.gender,
-        };
+        // Trả về thông tin profile nếu tồn tại
+        return userProfile;
     } catch (error) {
-        console.error("Error when getting profile:", error);
-        return null;
+        // Ném lỗi nếu có lỗi xảy ra
+        console.error(error);
+        throw error;
     }
+
 }
 
-
-
 module.exports = {
-    createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileService
+    createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileByTokenService
 }

@@ -7,8 +7,8 @@ const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = requir
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
 const { checkLoggedIn, checkRole, validateUserData } = require('../middleware/authMiddleware')
-const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending
-    , searchUsersByName } = require('../controllers/userController')
+const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending
+    , searchUsersByName, getProfileByToken } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
 const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
     getMovieTrailer, searchMovieByName, getMovieById } = require('../controllers/movieController')
@@ -46,7 +46,6 @@ routerAPI.post('/change-password', checkLoggedIn, changePassword)
 routerAPI.post('/forgot-password', forgotPassword)
 routerAPI.post('/reset-password', resetPassword)
 
-routerAPI.get('/profile', getProfile)
 routerAPI.get('/users/sorted-ascending', getSortedUsersAscending);
 routerAPI.get('/users/sorted-descending', getSortedUsersDescending);
 
@@ -59,6 +58,7 @@ routerAPI.get('/all-users', checkRole(['admin']), getAllUser);
 routerAPI.post('/create-users', checkRole(['admin']), postCreateUser);
 routerAPI.put('/update-users', checkRole(['admin']), putUpdateUser);
 routerAPI.delete('/delete-users/:id', checkRole(['admin']), deleteUser);
+routerAPI.get('/profile', checkLoggedIn, getProfileByToken)
 
 routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)
 routerAPI.post('/create-cinema', checkRole(['admin']), postCreateCinema)

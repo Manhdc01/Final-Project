@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const fs = require('fs')
-const { createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileService } = require('../services/userService')
+const jwt = require('jsonwebtoken');
+const { createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileByTokenService } = require('../services/userService')
 const { uploadSingleFile } = require('../services/fileService')
 const { uploadImage } = require('../services/movieService')
 
@@ -122,15 +123,6 @@ const deleteUser = async (req, res) => {
     }
 }
 
-const getProfile = async (req, res) => {
-    console.log(userId)
-    let id = req.body.id
-    let userProfile = await getProfileService(id)
-    return res.status(200).json({
-        errorCode: 0,
-        data: userProfile
-    })
-}
 
 const getSortedUsersAscending = async (req, res) => {
     const usersSorted = await User.find().sort({ name: 1 });
@@ -154,8 +146,34 @@ const searchUsersByName = async (req, res) => {
     }
 };
 
+// getProfile by token
+const getProfileByToken = async (req, res) => {
+    try {
+        // Lấy token từ header của yêu cầu
+        const token = req.header('Authorization').replace('Bearer ', '');
+        // Giải mã token để lấy thông tin người dùng
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        // Lấy id của người dùng từ decoded token
+        const id = decoded.id;
+        // Gọi service để lấy thông tin profile dựa trên userId
+        const userProfile = await getProfileByTokenService(id);
+        // Trả về kết quả thành công
+        return res.status(200).json({
+            errorCode: 0,
+            data: userProfile
+        });
+    } catch (error) {
+        // Xử lý lỗi nếu có
+        console.error(error);
+        return res.status(500).json({
+            errorCode: 500,
+            message: "Internal server error"
+        });
+    }
+}
 
 
 module.exports = {
-    postCreateUser, getAllUser, putUpdateUser, deleteUser, getProfile, getSortedUsersAscending, getSortedUsersDescending, searchUsersByName
+    postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending, searchUsersByName,
+    getProfileByToken
 }
