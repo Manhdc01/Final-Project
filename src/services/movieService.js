@@ -76,7 +76,7 @@ const deleteMovieService = async (id) => {
 
 const getMovieNowShowingService = async () => {
     try {
-        let result = await Movie.find({ status: "Now Showing" })
+        let result = await Movie.find({ status: "Now Showing" }).populate('category')
         return result
     } catch (error) {
         console.log(error)
@@ -86,7 +86,7 @@ const getMovieNowShowingService = async () => {
 
 const getMovieUpcomingService = async () => {
     try {
-        let result = await Movie.find({ status: "Upcoming" })
+        let result = await Movie.find({ status: "Upcoming" }).populate('category')
         return result
     } catch (error) {
         console.log(error)

@@ -36,10 +36,6 @@ async function getCommuneNameByCode(districtCode, communeCode) {
 const postCreateCinemaService = async (cinemaData) => {
     const { name, province, district, commune, address } = cinemaData;
     try {
-        const existingCinema = await Cinema.findOne({ name });
-        if (existingCinema) {
-            return { success: false, message: 'The cinema name already exists' };
-        }
 
         const provinceName = await getProvinceNameByCode(province);
         const districtName = await getDistrictNameByCode(province, district);

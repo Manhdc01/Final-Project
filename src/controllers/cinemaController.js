@@ -27,6 +27,11 @@ const getAllCinema = async (req, res) => {
 const postCreateCinema = async (req, res) => {
     const { name, province, district, commune, address } = req.body;
 
+    const existingCinema = await Cinema.findOne({ name });
+    if (existingCinema) {
+        return { success: false, message: 'The cinema name already exists' };
+    }
+
     try {
         const cinemaData = { name, province, district, commune, address };
         const cinema = await postCreateCinemaService(cinemaData);
