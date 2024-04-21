@@ -3,12 +3,13 @@ const routerAPI = express.Router()
 const passport = require('passport')
 
 
-const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema } = require('../controllers/cinemaController')
+const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvincesCinema,
+    getCinemaByProvince } = require('../controllers/cinemaController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
 const { checkLoggedIn, checkRole, validateUserData } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending
-    , searchUsersByName, getProfileByToken } = require('../controllers/userController')
+    , searchUsersByName, getProfileByToken, updateUserProfileByToken } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
 const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
     getMovieTrailer, searchMovieByName, getMovieById } = require('../controllers/movieController')
@@ -59,11 +60,14 @@ routerAPI.post('/create-users', checkRole(['admin']), postCreateUser);
 routerAPI.put('/update-users', checkRole(['admin']), putUpdateUser);
 routerAPI.delete('/delete-users/:id', checkRole(['admin']), deleteUser);
 routerAPI.get('/profile', checkLoggedIn, getProfileByToken)
+routerAPI.put('/update-profile', checkLoggedIn, updateUserProfileByToken)
 
 routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)
 routerAPI.post('/create-cinema', checkRole(['admin']), postCreateCinema)
 routerAPI.put('/update-cinema', checkRole(['admin']), putUpdateCinema)
-routerAPI.delete('/delete-cinema/:id', deleteCinema)
+routerAPI.delete('/delete-cinema/:id', checkRole(['admin']), deleteCinema)
+routerAPI.get('/province-cinema', checkRole(['admin']), getProvincesCinema)
+routerAPI.get('/cinema-by-province', checkRole(['admin']), getCinemaByProvince)
 
 routerAPI.get('/all-category', checkRole(['admin']), getAllCategory)
 routerAPI.post('/create-category', checkRole(['admin']), postCreateCategory)

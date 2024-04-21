@@ -69,6 +69,32 @@ const deleteCinema = async (req, res) => {
     })
 }
 
+const getProvincesCinema = async (req, res) => {
+    const cinemas = await Cinema.find();
+    const provincesSet = new Set(cinemas.map(cinema => cinema.province));
+    const provinces = Array.from(provincesSet);
+    return res.status(200).json({
+        errorCode: 0,
+        data: provinces
+    });
+}
+
+const getCinemaByProvince = async (req, res) => {
+    const province = req.query.province;
+
+    if (!province) {
+        return res.status(400).json({ message: "Province or city is required" });
+    }
+
+    try {
+        const cinemas = await Cinema.find({ province: province });
+        res.json({ data: cinemas });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 module.exports = {
-    getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema
+    getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvincesCinema, getCinemaByProvince
 }

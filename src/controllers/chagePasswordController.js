@@ -5,11 +5,16 @@ const changePassword = async (req, res) => {
         const userId = req.user.id;
 
         await changePasswordService(userId, currentPassword, newPassword);
-
-        return res.status(200).json({ message: 'Password updated successfully' });
+        return res.status(200).json({
+            message: 'Password updated successfully'
+        });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        if (error.message === 'Current password is incorrect') {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        } else {
+            return res.status(500).json({ message: 'Internal server error' });
+        }
     }
 }
 

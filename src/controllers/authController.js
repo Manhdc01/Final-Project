@@ -10,7 +10,7 @@ const registerUser = async (req, res) => {
         // Gọi hàm service để đăng ký người dùng
         const registerData = {
             name,
-            image: "https://www.i2clipart.com/cliparts/6/e/a/5/clipart-user-3-512x512-6ea5.png",
+            image: "https://icons.iconarchive.com/icons/papirus-team/papirus-status/512/avatar-default-icon.png",
             phone,
             email,
             password,

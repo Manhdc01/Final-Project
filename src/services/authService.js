@@ -36,25 +36,6 @@ const generateAccessToken = (userId) => {
 const generateRefreshToken = (userId) => {
     return jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "365d" });
 };
-
-const logout = async (req, res) => {
-    try {
-        const user = req.user;
-        user.accessToken = null;
-        await user.save();
-        return res.status(200).json({
-            errorCode: 0,
-            message: "Logout successfully"
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            errorCode: 500,
-            message: "Internal server error"
-        });
-    }
-}
-
 const requestAccessTokenService = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
@@ -93,19 +74,21 @@ const logOutUserService = (req, res) => {
 };
 
 const changePasswordService = async (userId, currentPassword, newPassword) => {
-    // find user
-    const user = await User.findById(userId);
+    try {
+        // find user
+        const user = await User.findById(userId);
 
-    // check currrent password
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!isValidPassword) {
-        throw new Error('Current password is incorrect');
+        // check current password
+        const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+        if (!isValidPassword) {
+            throw new Error('Current password is incorrect');
+        }
+        // Encrypt the new password and update it to the database
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.updateOne({ _id: userId }, { password: hashedPassword });
+    } catch (error) {
+        throw new Error(error.message);
     }
-
-    // Encrypt the new password and update it to the database
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await User.findByIdAndUpdate(userId, { password: hashedPassword });
-
 }
 
 const sendResetEmail = async (email) => {
@@ -178,10 +161,9 @@ const resetPasswordService = async (token, newPassword) => {
 }
 
 
-
 module.exports = {
     registerUserService, requestAccessTokenService, logOutUserService, changePasswordService,
     sendResetEmail, resetPasswordService,
-    generateAccessToken, generateRefreshToken//upsert is update and insert
+    generateAccessToken, generateRefreshToken
 }
 

@@ -1,7 +1,8 @@
 const User = require('../models/user');
 const fs = require('fs')
 const jwt = require('jsonwebtoken');
-const { createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileByTokenService } = require('../services/userService')
+const { createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileByTokenService,
+    updateUserProfile } = require('../services/userService')
 const { uploadSingleFile } = require('../services/fileService')
 const { uploadImage } = require('../services/movieService')
 
@@ -71,6 +72,9 @@ const putUpdateUser = async (req, res) => {
     let { id, name, phone, email, password, dateOfBirth, gender, role } = req.body
     let userData = { name, phone, email, password, dateOfBirth, gender, role }
 
+    const existingUser = await User.findById(id);
+    // Initialize userData.image with existing image to retain it if no new image is uploaded.
+    userData.image = existingUser.image;
     let imageUploadResult = {}
     if (!req.files || !req.files.image) {
         console.log("No file uploaded");
@@ -175,8 +179,43 @@ const getProfileByToken = async (req, res) => {
     }
 }
 
+const updateUserProfileByToken = async (req, res) => {
+    try {
+        let { name, email, oldPassword, newPassword } = req.body;
+        let dataUser = {
+            name, email, oldPassword, newPassword
+        } // Thêm oldPassword và newPassword
+        const userId = req.user._id;
+        // Gọi service để cập nhật thông tin người dùng
+        // Truyền oldPassword và newPassword
+        let imageUploadResult = {}
+        if (!req.files || Object.keys(req.files).length === 0) {
+        } else {
+            // Nếu có ảnh được gửi trong yêu cầu, thực hiện quá trình đẩy ảnh lên Imgur và cập nhật thông tin người dùng
+            let file_dir = req.files.image;
+            let fileUploadResult = await uploadSingleFile(file_dir);
+            let file_addr = fileUploadResult.path;
+            imageUploadResult = await uploadImage(file_addr);
+            dataUser.image = imageUploadResult.imageUrl;
+            console.log(">>>>check", dataUser)
+            try {
+                fs.unlinkSync(file_addr);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        const updatedUser = await updateUserProfile(userId, dataUser);
+
+        return res.status(200).json({ user: updatedUser });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
 
 module.exports = {
     postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending, searchUsersByName,
-    getProfileByToken
+    getProfileByToken, updateUserProfileByToken
 }

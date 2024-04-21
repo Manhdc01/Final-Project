@@ -84,6 +84,17 @@ const getProfileByTokenService = async (id) => {
 
 }
 
+const updateUserProfile = async (userId, dataUser) => {
+    try {
+        // Tìm người dùng trong cơ sở dữ liệu
+        const updatedUser = await User.updateOne({ _id: userId }, { $set: dataUser });
+        return updatedUser;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 module.exports = {
-    createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileByTokenService
+    createUserService, getAllUserService, putUpdateUserService, deleteUserService, getProfileByTokenService, updateUserProfile
 }
