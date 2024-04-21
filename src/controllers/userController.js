@@ -75,10 +75,9 @@ const putUpdateUser = async (req, res) => {
     const existingUser = await User.findById(id);
     // Initialize userData.image with existing image to retain it if no new image is uploaded.
     userData.image = existingUser.image;
+    // console.log("check", userData.image)
     let imageUploadResult = {}
-    if (!req.files || !req.files.image) {
-        console.log("No file uploaded");
-    } else {
+    if (req.files && req.files.image) {
         let image = req.files.image;
         let fileUploadResult = await uploadSingleFile(image);
         let file_addr = fileUploadResult.path;
@@ -94,12 +93,12 @@ const putUpdateUser = async (req, res) => {
         catch (err) {
             console.log(err)
         }
-        let userUpdate = await putUpdateUserService(id, userData);
-        return res.status(200).json({
-            errorCode: 0,
-            data: userUpdate
-        });
     }
+    let userUpdate = await putUpdateUserService(id, userData);
+    return res.status(200).json({
+        errorCode: 0,
+        data: userUpdate
+    });
 }
 
 const deleteUser = async (req, res) => {
@@ -188,8 +187,11 @@ const updateUserProfileByToken = async (req, res) => {
         const userId = req.user._id;
         // Gọi service để cập nhật thông tin người dùng
         // Truyền oldPassword và newPassword
+        const existingUser = await Movie.findById(id);
+        // Initialize userData.image with existing image to retain it if no new image is uploaded.
+        dataMovie.image = existingUser.image;
         let imageUploadResult = {}
-        if (!req.files || Object.keys(req.files).length === 0) {
+        if (req.files && req.files.image) {
         } else {
             // Nếu có ảnh được gửi trong yêu cầu, thực hiện quá trình đẩy ảnh lên Imgur và cập nhật thông tin người dùng
             let file_dir = req.files.image;

@@ -63,10 +63,11 @@ const postCreateMovie = async (req, res) => {
 const putupdateMovie = async (req, res) => {
     let { id, name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body
     let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
+    const existingMovie = await Movie.findById(id);
+    // Initialize userData.image with existing image to retain it if no new image is uploaded.
+    dataMovie.image = existingMovie.image;
     let imageUploadResult = {}
-    if (!req.files || !req.files.poster) {
-        console.log("No file uploaded");
-    } else {
+    if (req.files && req.files.poster) {
         // Lưu file ảnh đến local
         let poster = req.files.poster;
         // console.log(poster)
@@ -85,13 +86,12 @@ const putupdateMovie = async (req, res) => {
         catch (err) {
             console.log(err)
         }
-
-        let movie = await putUpdateMovieService(id, dataMovie);
-        return res.status(200).json({
-            errorCode: 0,
-            data: movie
-        });
     }
+    let movie = await putUpdateMovieService(id, dataMovie);
+    return res.status(200).json({
+        errorCode: 0,
+        data: movie
+    });
 }
 
 const deleteMovie = async (req, res) => {
