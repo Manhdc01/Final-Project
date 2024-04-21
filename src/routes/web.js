@@ -19,18 +19,18 @@ const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
     showTimeByDate } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
 
-// routerAPI.get('/auth/google',
-//     passport.authenticate('google', { scope: ['profile', 'email'] }));
+routerAPI.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// routerAPI.get('/google/redirect',
-//     passport.authenticate('google', { failureRedirect: '/login' }),
-//     function (req, res) {
-//         const { user, accessToken } = req.user;
-//         res.status(200).json({
-//             user: user,
-//             accessToken: accessToken
-//         });
-//     });
+routerAPI.get('/google/redirect',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function (req, res) {
+        const { user, accessToken } = req.user;
+        res.status(200).json({
+            user: user,
+            accessToken: accessToken
+        });
+    });
 
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
