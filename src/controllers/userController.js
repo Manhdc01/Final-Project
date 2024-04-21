@@ -180,35 +180,37 @@ const getProfileByToken = async (req, res) => {
 
 const updateUserProfileByToken = async (req, res) => {
     try {
-        let { name, email, oldPassword, newPassword } = req.body;
+        let { id, name, email, phone, dateOfBirth, gender } = req.body;
         let dataUser = {
-            name, email, oldPassword, newPassword
-        } // Thêm oldPassword và newPassword
-        const userId = req.user._id;
-        // Gọi service để cập nhật thông tin người dùng
-        // Truyền oldPassword và newPassword
-        const existingUser = await Movie.findById(id);
+            name, email, phone, dateOfBirth, gender
+        }
+        const existingUser = await User.findById(id);
         // Initialize userData.image with existing image to retain it if no new image is uploaded.
-        dataMovie.image = existingUser.image;
+        dataUser.image = existingUser.image;
+        // console.log("check", userData.image)
         let imageUploadResult = {}
         if (req.files && req.files.image) {
-        } else {
-            // Nếu có ảnh được gửi trong yêu cầu, thực hiện quá trình đẩy ảnh lên Imgur và cập nhật thông tin người dùng
-            let file_dir = req.files.image;
-            let fileUploadResult = await uploadSingleFile(file_dir);
+            let image = req.files.image;
+            let fileUploadResult = await uploadSingleFile(image);
             let file_addr = fileUploadResult.path;
+            // console.log("Url image:", file_addr);
+            // upload to imgur
             imageUploadResult = await uploadImage(file_addr);
-            dataUser.image = imageUploadResult.imageUrl;
-            console.log(">>>>check", dataUser)
+            // console.log(">>>>check", imageUploadResult)
+            userData.image = imageUploadResult.imageUrl
+            // remove file from local
             try {
                 fs.unlinkSync(file_addr);
-            } catch (err) {
-                console.log(err);
+            }
+            catch (err) {
+                console.log(err)
             }
         }
-        const updatedUser = await updateUserProfile(userId, dataUser);
-
-        return res.status(200).json({ user: updatedUser });
+        let userUpdate = await putUpdateUserService(id, dataUser);
+        return res.status(200).json({
+            errorCode: 0,
+            data: userUpdate
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Internal server error' });

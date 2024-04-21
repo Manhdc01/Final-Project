@@ -84,10 +84,10 @@ const getProfileByTokenService = async (id) => {
 
 }
 
-const updateUserProfile = async (userId, dataUser) => {
+const updateUserProfile = async (id, dataUser) => {
     try {
         // Tìm người dùng trong cơ sở dữ liệu
-        const updatedUser = await User.updateOne({ _id: userId }, { $set: dataUser });
+        const updatedUser = await User.updateOne({ _id: id }, { $set: dataUser });
         return updatedUser;
     } catch (error) {
         console.error(error);

@@ -65,7 +65,7 @@ const putupdateMovie = async (req, res) => {
     let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
     const existingMovie = await Movie.findById(id);
     // Initialize userData.image with existing image to retain it if no new image is uploaded.
-    dataMovie.image = existingMovie.image;
+    dataMovie.poster = existingMovie.poster;
     let imageUploadResult = {}
     if (req.files && req.files.poster) {
         // Lưu file ảnh đến local
