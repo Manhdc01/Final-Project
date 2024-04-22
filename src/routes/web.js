@@ -22,14 +22,12 @@ const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controlle
 routerAPI.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-routerAPI.get('/google/redirect',
+routerAPI.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
-    function (req, res) {
-        const { user, accessToken } = req.user;
-        res.status(200).json({
-            user: user,
-            accessToken: accessToken
-        });
+    (req, res) => {
+        // Set token in HTTP-only cookie
+        res.cookie('accessToken', req.user.accessToken, { httpOnly: true, secure: true }); // Use 'secure: true' in production
+        res.redirect('http://localhost:3001/home');
     });
 
 routerAPI.get('/login', (req, res) => {
