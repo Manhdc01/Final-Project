@@ -24,12 +24,13 @@ routerAPI.get('/auth/google',
 
 routerAPI.get('/google/redirect',
     passport.authenticate('google', { failureRedirect: '/profile' }),
-    function (req, res) {
-        const { user, accessToken } = req.user;
-        res.status(200).json({
-            user: user,
-            accessToken: accessToken
-        });
+    (req, res) => {
+        // On successful authentication, set HTTP-only cookie and redirect
+        console.log("User profile:", req.user);
+        res.cookie('accessToken', req.user.accessToken, { httpOnly: true, secure: true }); // Ensure 'secure' is true in production
+        // Optionally set non-sensitive data in a non-HTTP-only cookie or send it as JSON
+        res.cookie('userInfo', JSON.stringify({ name: req.user.name, image: req.user.image }), { secure: true, httpOnly: false });
+        res.redirect('http://localhost:3001/home'); // Make sure the redirect URL is correct for your front-end app
     });
 
 routerAPI.get('/login', (req, res) => {

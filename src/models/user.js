@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: function () { return !this.googleId; }, // Required unless Google ID is present
         minlength: 6
     },
     dateOfBirth: {
@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
+    },
+    googleId: {  // Storing Google ID for users logging in through Google
+        type: String,
+        unique: true,
+        sparse: true // Sparse is true because not all users will have a Google ID
     },
     accessToken: {
         type: String,
