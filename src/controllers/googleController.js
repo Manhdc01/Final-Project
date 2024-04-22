@@ -10,16 +10,15 @@ const loginWithGoogle = () => {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: process.env.GOOGLE_REDIRECT_LOGIN
     },
-        function (accessToken, refreshToken, profile, cb) {
-            const user = {
-                email: profile.emails[0].value,
-                name: profile.displayName,
-                image: profile.photos[0].value,
-                accessToken // You might want to securely send this or use it server-side
-            };
-            return cb(null, user);
-        }
-    ));
+        async function (accessToken, refreshToken, profile, cb) {
+            try {
+                const newAccessToken = generateAccessToken(profile.id);
+                console.log(">>>>>>>token", profile);
+                cb(null, { accessToken: newAccessToken });
+            } catch (error) {
+                cb(error, null);
+            }
+        }));
 }
 
 module.exports = {
