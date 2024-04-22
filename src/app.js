@@ -6,11 +6,11 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const webRoutes = require('./routes/web')
 const path = require('path')
+const MongoStore = require('connect-mongo');
 const configViewEngine = require('./config/viewEngine')
-const { loginWithGoogle } = require('./controllers/googleController')
 const connection = require('./config/database')
 const fileUpload = require('express-fileupload');
-const sessionMiddleware = require('./middleware/sessionMiddleware')
+const handlePassport = require('./middleware/passport')(passport);
 
 
 const app = express()
@@ -26,19 +26,25 @@ app.use(fileUpload());
 
 //config template engine
 configViewEngine(app)
-app.use(sessionMiddleware());
-loginWithGoogle()
-
-
-// Cấu hình serialize và deserialize user
-passport.serializeUser((user, done) => {
-    done(null, user);
+// Khởi tạo MongoStore với session
+const store = MongoStore.create({
+    mongoUrl: 'mongodb+srv://manhdc01:Manh2001@finalproject.xkp0shg.mongodb.net/final', // Thay đổi đường dẫn kết nối MongoDB nếu cần
+    ttl: 14 * 24 * 60 * 60, // Thời gian sống của session trong giây (ở đây là 14 ngày)
 });
+app.use(
+    session({
+        secret: 'keyboard cat',
+        resave: false,
+        saveUninitialized: false,
+        store: store
+    })
+)
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
 
-passport.deserializeUser((user, done) => {
-    done(null, user);
-});
-
+// Sử dụng Passport
+handlePassport;
 
 app.use('/', webRoutes)
     ; (async () => {

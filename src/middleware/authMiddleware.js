@@ -4,10 +4,17 @@ const User = require('../models/user')
 
 const checkLoggedIn = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1];
+        // First, try to get the token from the Authorization header
+        let token = req.headers.authorization?.split(" ")[1];
+        // If no token in Authorization header, check the cookies
+        if (!token) {
+            token = req.cookies['jwt']; // Assuming your token stored in cookies is named 'jwt'
+        }
+        // If still no token, return an error
         if (!token) {
             return res.status(401).json({ message: "JWT must be provided" });
         }
+        // Verify the token
         const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const user = await User.findById(payload.userId);
         if (!user) {
@@ -16,11 +23,18 @@ const checkLoggedIn = async (req, res, next) => {
                 message: "User not found"
             });
         }
-        req.user = user
-        next()
+        req.user = user;
+        next();
     }
     catch (error) {
         console.error(error);
+        // Determine if it's an invalid token or other errors
+        if (error.name === "JsonWebTokenError") {
+            return res.status(403).json({
+                errorCode: 403,
+                message: "Invalid token"
+            });
+        }
         return res.status(500).json({
             errorCode: 500,
             message: "Internal server error"
@@ -57,8 +71,8 @@ const checkRole = (roles) => {
                 message: "Internal server error"
             });
         }
-    }
-}
+    };
+};
 const validateUserData = async (req, res, next) => {
     const { email, password } = req.body;
 

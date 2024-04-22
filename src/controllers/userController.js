@@ -197,7 +197,7 @@ const updateUserProfileByToken = async (req, res) => {
             // upload to imgur
             imageUploadResult = await uploadImage(file_addr);
             // console.log(">>>>check", imageUploadResult)
-            userData.image = imageUploadResult.imageUrl
+            dataUser.image = imageUploadResult.imageUrl
             // remove file from local
             try {
                 fs.unlinkSync(file_addr);

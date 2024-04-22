@@ -106,7 +106,7 @@ const sendResetEmail = async (email) => {
 
         console.log(">>>Token:::", resetToken)
         // Construct reset link
-        const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+        const resetLink = `http://localhost:3001/reset-password?token=${resetToken}`;
 
         // Send reset email
         const transporter = nodemailer.createTransport({

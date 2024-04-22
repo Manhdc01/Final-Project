@@ -19,8 +19,7 @@ const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
     showTimeByDate } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
 
-routerAPI.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] }));
+routerAPI.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 routerAPI.get('/google/redirect',
     passport.authenticate('google', { failureRedirect: '/profile' }),
@@ -60,7 +59,7 @@ routerAPI.get('/all-users', checkRole(['admin']), getAllUser);
 routerAPI.post('/create-users', checkRole(['admin']), postCreateUser);
 routerAPI.put('/update-users', checkRole(['admin']), putUpdateUser);
 routerAPI.delete('/delete-users/:id', checkRole(['admin']), deleteUser);
-routerAPI.get('/profile', checkLoggedIn, getProfileByToken)
+routerAPI.get('/profile',checkLoggedIn, getProfileByToken)
 routerAPI.put('/update-profile', checkLoggedIn, updateUserProfileByToken)
 
 routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)

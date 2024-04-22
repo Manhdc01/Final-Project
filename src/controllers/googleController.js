@@ -4,6 +4,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const { generateAccessToken } = require('../services/authService')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const axios = require('axios')
 
 const loginWithGoogle = () => {
     passport.use(new GoogleStrategy({

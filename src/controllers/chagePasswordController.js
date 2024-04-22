@@ -37,7 +37,11 @@ const resetPassword = async (req, res) => {
     try {
         const { token, newPassword } = req.body;
         const result = await resetPasswordService(token, newPassword);
-        return res.status(result.status).json({ message: result.message });
+        if (result.status !== 200) {
+            return res.status(result.status).json({ message: result.message });
+        }
+        console.log("adddd check: ", result.status)
+        return res.status(200).json({ message: result.message });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Failed to reset password' });
