@@ -1,6 +1,8 @@
 const express = require('express')
 const routerAPI = express.Router()
 const passport = require('passport')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvincesCinema,
@@ -26,12 +28,22 @@ routerAPI.get('/google/redirect',
     (req, res) => {
         // On successful authentication, set HTTP-only cookie and redirect
         console.log("User profile:", req.user);
-        res.cookie('accessToken', req.user.accessToken, { httpOnly: true, secure: true }); // Ensure 'secure' is true in production
+        const payload = {
+            googleId: req.user.googleId,
+            userId: req.user._id,
+            name: req.user.name,
+            email: req.user.email,
+            image: req.user.image,
+            role: req.user.role,
+            // Add other relevant user data here
+        };
+        // Generate the JWT token
+        const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+        res.cookie('accessToken', token, { httpOnly: true, secure: true }); // Ensure 'secure' is true in production
         // Optionally set non-sensitive data in a non-HTTP-only cookie or send it as JSON
         res.cookie('userInfo', JSON.stringify({ name: req.user.name, image: req.user.image }), { secure: true, httpOnly: false });
-        res.redirect('http://localhost:3001/home'); // Make sure the redirect URL is correct for your front-end app
+        res.redirect(`http://localhost:3001/home?token=${token}`); // Make sure the redirect URL is correct for your front-end app
     });
-
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
 })

@@ -77,7 +77,7 @@ const deleteUserService = async (userId) => {
 const getProfileByTokenService = async (id) => {
     try {
         // Tìm thông tin profile dựa trên userId
-        const userProfile = await User.findOne({ _id: id }).select('image name email dateOfBirth gender phone');
+        const userProfile = await User.findOne({ _id: id }).select('image name email dateOfBirth gender phone googleId');
 
         // Kiểm tra xem profile có tồn tại không
         if (!userProfile) {

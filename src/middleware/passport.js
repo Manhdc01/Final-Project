@@ -16,16 +16,18 @@ const handleGoogleStrategy = (passport) => {
                     googleId: profile.id,
                     email: profile.emails[0].value,
                     name: profile.displayName,
-                    image: profile.photos[0].value,
-                    role: "customer",
-                    accessToken: accessToken
+                    image: profile.photos[0].value
+
                 }
                 try {
-                    let user = await User.findOne({ googleId: profile.id })
+                    let user = await User.findOne({ email: profile.emails[0].value })
+
                     if (user) {
                         done(null, user)
                     } else {
-                        user = await User.create(newUser)
+                        user = await User.create({
+                            ...newUser, role: "customer"
+                        })
                         done(null, user)
                     }
                 } catch (err) {
