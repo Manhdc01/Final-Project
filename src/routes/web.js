@@ -9,7 +9,7 @@ const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } 
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
 const { checkLoggedIn, checkRole, validateUserData } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending
-    , searchUsersByName, getProfileByToken, updateUserProfileByToken } = require('../controllers/userController')
+    , searchUsersByName, getProfileByToken, updateUserProfileByToken, getAllAdminCinema } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
 const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
     getMovieTrailer, searchMovieByName, getMovieById } = require('../controllers/movieController')
@@ -19,7 +19,7 @@ const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
     showTimeByDate } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
 
-routerAPI.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+routerAPI.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 routerAPI.get('/google/redirect',
     passport.authenticate('google', { failureRedirect: '/profile' }),
@@ -35,7 +35,6 @@ routerAPI.get('/google/redirect',
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
 })
-
 
 routerAPI.post('/login', loginUser)//loginUser
 
@@ -56,10 +55,11 @@ routerAPI.get('/users/search', checkRole(['admin']), searchUsersByName);
 // routerAPI.put('/users', putUpdateUser)
 // routerAPI.delete('/users', deleteUser)
 routerAPI.get('/all-users', checkRole(['admin']), getAllUser);
+routerAPI.get('/all-admin-cinema', checkRole(['admin']), getAllAdminCinema)
 routerAPI.post('/create-users', checkRole(['admin']), postCreateUser);
 routerAPI.put('/update-users', checkRole(['admin']), putUpdateUser);
 routerAPI.delete('/delete-users/:id', checkRole(['admin']), deleteUser);
-routerAPI.get('/profile',checkLoggedIn, getProfileByToken)
+routerAPI.get('/profile', checkLoggedIn, getProfileByToken)
 routerAPI.put('/update-profile', checkLoggedIn, updateUserProfileByToken)
 
 routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)

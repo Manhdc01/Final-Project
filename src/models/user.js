@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
     },
+    cinema: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'cinema',
+    },
     googleId: {  // Storing Google ID for users logging in through Google
         type: String,
         unique: true,

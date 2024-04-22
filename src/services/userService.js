@@ -1,9 +1,18 @@
 const { model } = require("mongoose")
 const User = require('../models/user')
 const bcrypt = require('bcryptjs');
+const Cinema = require("../models/cinema");
 
 
 const createUserService = async (userData) => {
+
+    let cinema = null;
+    if (userData.cinema) {
+        cinema = await Cinema.findById(userData.cinema);
+        if (!cinema) {
+            console.log(`Cinema with ID ${userData.cinema} not found`);
+        }
+    }
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     try {
         let result = await User.create({
@@ -14,7 +23,8 @@ const createUserService = async (userData) => {
             password: hashedPassword,
             dateOfBirth: userData.dateOfBirth,
             gender: userData.gender,
-            role: userData.role
+            role: userData.role,
+            cinema: cinema ? userData.cinema : null
         });
         console.log(result);
         if (!result) {

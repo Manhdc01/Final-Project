@@ -7,7 +7,7 @@ const { uploadSingleFile } = require('../services/fileService')
 const { uploadImage } = require('../services/movieService')
 
 const postCreateUser = async (req, res) => {
-    let { name, phone, email, password, dateOfBirth, gender, role } = req.body
+    let { name, phone, email, password, dateOfBirth, gender, role, cinema } = req.body
     // check email exists
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
@@ -16,7 +16,7 @@ const postCreateUser = async (req, res) => {
             message: "Email already exists"
         });
     }
-    let userData = { name, phone, email, password, dateOfBirth, gender, role }
+    let userData = { name, phone, email, password, dateOfBirth, gender, role, cinema }
     let imageUploadResult = {}
     if (!req.files || !req.files.image) {
         console.log("No file uploaded");
@@ -68,9 +68,22 @@ const getAllUser = async (req, res) => {
     }
 }
 
+const getAllAdminCinema = async (req, res) => {
+    try {
+        const adminCinema = await User.find({ role: 'admin cinema' }).populate('cinema');
+        return res.status(200).json({
+            errorCode: 0,
+            data: adminCinema
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
 const putUpdateUser = async (req, res) => {
-    let { id, name, phone, email, password, dateOfBirth, gender, role } = req.body
-    let userData = { name, phone, email, password, dateOfBirth, gender, role }
+    let { id, name, phone, email, password, dateOfBirth, gender, role, cinema } = req.body
+    let userData = { name, phone, email, password, dateOfBirth, gender, role, cinema }
 
     const existingUser = await User.findById(id);
     // Initialize userData.image with existing image to retain it if no new image is uploaded.
@@ -221,5 +234,5 @@ const updateUserProfileByToken = async (req, res) => {
 
 module.exports = {
     postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending, searchUsersByName,
-    getProfileByToken, updateUserProfileByToken
+    getProfileByToken, updateUserProfileByToken, getAllAdminCinema
 }

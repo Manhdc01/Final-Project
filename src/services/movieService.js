@@ -21,7 +21,6 @@ const postCreateMovieService = async (dataMovie) => {
                 console.log(`Faculty with ID ${dataMovie.category} not found`);
             }
         }
-
         //create movie with ID category
         let result = await Movie.create({
             name: dataMovie.name,
