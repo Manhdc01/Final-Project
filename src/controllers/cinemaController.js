@@ -1,4 +1,6 @@
 const Cinema = require('../models/cinema');
+const Movie = require('../models/movie');
+const User = require('../models/user');
 const { postCreateCinemaService, getAllCinemaService, putUpdateCinemaService, deleteCinemaService } = require('../services/cinemaService')
 
 const getAllCinema = async (req, res) => {

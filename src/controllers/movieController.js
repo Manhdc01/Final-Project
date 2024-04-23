@@ -59,7 +59,8 @@ const postCreateMovie = async (req, res) => {
         });
     }
 }
-
+const postCreateMovieByAdminCinema = async (req, res) => {
+}
 const putupdateMovie = async (req, res) => {
     let { id, name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body
     let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
