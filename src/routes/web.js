@@ -153,7 +153,7 @@ routerAPI.get('/success', (req, res) => {
             res.status(500).send("Payment execution failed");
         } else {
             // Redirect to the React route handling the confirmation
-            res.redirect(`http://localhost:3000/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            res.redirect(`https://dc-cinema.onrender.com/success?paymentId=${paymentId}&PayerID=${PayerID}`);
         }
     });
 });
@@ -180,7 +180,7 @@ routerAPI.post('/create-payment', async (req, res) => {
                 payment_method: 'paypal'
             },
             redirect_urls: {
-                return_url: 'http://localhost:3001/success',
+                return_url: 'https://dc-cinema.vercel.app/success',
                 cancel_url: 'http://localhost:3000/cancel'
             },
             transactions: [{
