@@ -132,6 +132,8 @@ routerAPI.get('/paypal', (req, res) => {
 })
 
 // routerAPI.post('/create-payment', checkLoggedIn, createPayment);
+
+
 routerAPI.get('/success', (req, res) => {
     var PayerID = req.query.PayerID;
     var paymentId = req.query.paymentId;
@@ -144,6 +146,7 @@ routerAPI.get('/success', (req, res) => {
             }
         }]
     };
+
     paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
         if (error) {
             console.error(error.response);
@@ -154,7 +157,6 @@ routerAPI.get('/success', (req, res) => {
         }
     });
 });
-
 routerAPI.post('/create-payment', async (req, res) => {
     const clientID = 'ARJRbC7-R6guvxhINoQkkJzriCZ-OfmLAJ-RSYyqVmQ6IWG0K8l-VtVeFa9H6Z9j1QreCfyBxBXRqwJg';
     const secret = 'EGKFytFEyflJKpF-Y7piQXLPDE9r_o9YNCoKDTg6eVYZs9E4YTCeX9Wf92EkoEQHcMq6_yap1VcFPdeY';

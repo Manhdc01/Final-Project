@@ -18,13 +18,7 @@ const app = express()
 const port = process.env.PORT || 8888//port
 const hostname = process.env.HOST_NAME
 
-const corsOptions = {
-    origin: 'http://localhost:3001',
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-    allowedHeaders: 'Content-Type,Authorization'
-};
-app.use(cors(corsOptions));
+app.use(cors("*"));
 //config req.body
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
