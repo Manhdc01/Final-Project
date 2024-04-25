@@ -11,13 +11,20 @@ const configViewEngine = require('./config/viewEngine')
 const connection = require('./config/database')
 const fileUpload = require('express-fileupload');
 const handlePassport = require('./middleware/passport')(passport);
-
+const paypal = require('paypal-rest-sdk');
+const axios = require('axios');
 
 const app = express()
 const port = process.env.PORT || 8888//port
 const hostname = process.env.HOST_NAME
 
-app.use(cors("*"))
+const corsOptions = {
+    origin: 'http://localhost:3001',
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+    allowedHeaders: 'Content-Type,Authorization'
+};
+app.use(cors(corsOptions));
 //config req.body
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -39,6 +46,12 @@ app.use(
         store: store
     })
 )
+paypal.configure({
+    'mode': 'sandbox', // hoặc 'live' nếu bạn muốn triển khai trong môi trường sản phẩm
+    'client_id': 'ARJRbC7-R6guvxhINoQkkJzriCZ-OfmLAJ-RSYyqVmQ6IWG0K8l-VtVeFa9H6Z9j1QreCfyBxBXRqwJg',
+    'client_secret': 'EGKFytFEyflJKpF-Y7piQXLPDE9r_o9YNCoKDTg6eVYZs9E4YTCeX9Wf92EkoEQHcMq6_yap1VcFPdeY'
+});
+
 // Passport middleware
 app.use(passport.initialize())
 app.use(passport.session())

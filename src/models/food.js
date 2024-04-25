@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 
 // Định nghĩa schema cho mục đồ ăn/nước uống
 const foodSchema = new mongoose.Schema({
+    image: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true

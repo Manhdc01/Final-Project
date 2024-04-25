@@ -1,8 +1,10 @@
 const express = require('express')
 const routerAPI = express.Router()
 const passport = require('passport')
+const paypal = require('paypal-rest-sdk')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
+const axios = require('axios')
 
 
 const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvincesCinema,
@@ -21,6 +23,8 @@ const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
     showTimeByDate, showTimeByMovieId } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
 const { getAllMovieAdminCinema, addMovieToCinema } = require('../controllers/movieCinemaController')
+const { postCreateBooking } = require('../controllers/bookingController')
+const { createPayment } = require('../controllers/paypalController')
 
 routerAPI.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
@@ -113,13 +117,103 @@ routerAPI.delete('/delete-show-time/:id', checkRole(['admin']), deleteShowTime)
 routerAPI.get('/showtime/all-dates', checkRole(['admin']), showTimeByDate)
 routerAPI.get('/showtime-by-movie/:movieId', checkLoggedIn, showTimeByMovieId)
 
-routerAPI.post('/add-food', checkRole(['admin']), addFood)
+routerAPI.post('/add-food', addFood)
 routerAPI.get('/all-food', checkRole(['admin', 'customer']), getAllFood)
 routerAPI.put('/update-food', checkRole(['admin']), putUpdateFood)
 routerAPI.delete('/delete-food/:id', checkRole(['admin']), deleteFood)
 
 routerAPI.get('/all-movie-admin-cinema', checkRole(['admin cinema']), getAllMovieAdminCinema)
 routerAPI.post('/add-movie-to-cinema', checkRole(['admin cinema']), addMovieToCinema)
+
+routerAPI.post('/create-booking', postCreateBooking)
+
+routerAPI.get('/paypal', (req, res) => {
+    res.render('paypal.ejs')
+})
+
+// routerAPI.post('/create-payment', checkLoggedIn, createPayment);
+routerAPI.get('/success', (req, res) => {
+    var PayerID = req.query.PayerID;
+    var paymentId = req.query.paymentId;
+    var execute_payment_json = {
+        "payer_id": PayerID,
+        "transactions": [{
+            "amount": {
+                "currency": "USD",
+                "total": "10.00"
+            }
+        }]
+    };
+    paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+        if (error) {
+            console.error(error.response);
+            res.status(500).send("Payment execution failed");
+        } else {
+            // Redirect to the React route handling the confirmation
+            res.redirect(`http://localhost:3000/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+        }
+    });
+});
+
+routerAPI.post('/create-payment', async (req, res) => {
+    const clientID = 'ARJRbC7-R6guvxhINoQkkJzriCZ-OfmLAJ-RSYyqVmQ6IWG0K8l-VtVeFa9H6Z9j1QreCfyBxBXRqwJg';
+    const secret = 'EGKFytFEyflJKpF-Y7piQXLPDE9r_o9YNCoKDTg6eVYZs9E4YTCeX9Wf92EkoEQHcMq6_yap1VcFPdeY';
+    const tokenEndpoint = 'https://api.sandbox.paypal.com/v1/oauth2/token';
+    const data = {
+        grant_type: 'client_credentials'
+    };
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${Buffer.from(`${clientID}:${secret}`).toString('base64')}`
+    };
+
+    try {
+        const response = await axios.post(tokenEndpoint, new URLSearchParams(data), { headers });
+        const accessToken = response.data.access_token;
+        console.log(accessToken)
+
+        const paymentData = {
+            intent: 'sale',
+            payer: {
+                payment_method: 'paypal'
+            },
+            redirect_urls: {
+                return_url: 'http://localhost:3001/success',
+                cancel_url: 'http://localhost:3000/cancel'
+            },
+            transactions: [{
+                item_list: {
+                    items: [{
+                        name: 'item name',
+                        price: '10.00',
+                        currency: 'USD',
+                        quantity: 1
+                    }]
+                },
+                amount: {
+                    total: '10.00',
+                    currency: 'USD'
+                },
+                description: 'Description of the payment'
+            }]
+        };
+
+        const paymentResponse = await axios.post('https://api.sandbox.paypal.com/v1/payments/payment', paymentData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        const approvalUrl = paymentResponse.data.links.find(link => link.rel === 'approval_url').href;
+        console.log(approvalUrl)
+        res.json({ approvalUrl: approvalUrl });
+    } catch (error) {
+        console.error('Error creating payment:', error);
+        res.status(500).send('An error occurred while creating payment');
+        console.log('PayPal API response:', error.response);
+    }
+});
 
 
 module.exports = routerAPI

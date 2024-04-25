@@ -3,7 +3,6 @@ const Food = require("../models/food")
 const addFoodService = async (foodData) => {
     try {
         return await Food.create(foodData)
-
     } catch (error) {
         console.error(error)
         return null
