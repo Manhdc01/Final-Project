@@ -26,7 +26,6 @@ const movieSchema = new mongoose.Schema({
     cinema: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'cinema',
-        required: true
     }
 
 },

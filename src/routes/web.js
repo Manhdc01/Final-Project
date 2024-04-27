@@ -67,10 +67,6 @@ routerAPI.get('/users/sorted-ascending', getSortedUsersAscending);
 routerAPI.get('/users/sorted-descending', getSortedUsersDescending);
 
 routerAPI.get('/users/search', checkRole(['admin']), searchUsersByName);
-// routerAPI.get('/users', getAllUser)
-// routerAPI.post('/users', postCreateUser)
-// routerAPI.put('/users', putUpdateUser)
-// routerAPI.delete('/users', deleteUser)
 routerAPI.get('/all-users', checkRole(['admin']), getAllUser);
 routerAPI.get('/all-admin-cinema', checkRole(['admin']), getAllAdminCinema)
 routerAPI.post('/create-users', checkRole(['admin']), postCreateUser);

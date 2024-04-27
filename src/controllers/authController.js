@@ -44,7 +44,6 @@ const registerUser = async (req, res) => {
     }
 
 }
-
 const loginUser = async (req, res) => {
     try {
         const email = req.body.email
@@ -58,20 +57,16 @@ const loginUser = async (req, res) => {
                 message: "User not found"
             });
         }
-        // So sánh password
-        const validPassword = await bcrypt.compare(password, user.password);
+        const validPassword = await bcrypt.compare(password, user.password); //Compare password
         if (!validPassword) {
             return res.status(400).json({
                 errorCode: 400,
                 message: "Invalid password"
             });
         }
-        // Tạo token
-        const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET);
-        // Lưu token vào user
-        user.accessToken = accessToken;
+        const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET);// create token
+        user.accessToken = accessToken;// save access token
         await user.save();
-        // Trả về kết quả thành công
         return res.status(200).json({
             errorCode: 0,
             data: {
@@ -79,7 +74,6 @@ const loginUser = async (req, res) => {
                 accessToken: accessToken
             }
         });
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({
