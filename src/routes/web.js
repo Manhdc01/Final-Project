@@ -23,7 +23,7 @@ const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
     showTimeByDate, showTimeByMovieId } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
 const { getAllMovieAdminCinema, addMovieToCinema } = require('../controllers/movieCinemaController')
-const { postCreateBooking } = require('../controllers/bookingController')
+const { postCreateBooking, saveUserBooking, getBookingByUser } = require('../controllers/bookingController')
 const { createPayment } = require('../controllers/paypalController')
 
 routerAPI.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -122,6 +122,8 @@ routerAPI.get('/all-movie-admin-cinema', checkRole(['admin cinema']), getAllMovi
 routerAPI.post('/add-movie-to-cinema', checkRole(['admin cinema']), addMovieToCinema)
 
 routerAPI.post('/create-booking', postCreateBooking)
+routerAPI.post('/save-booking', saveUserBooking)
+routerAPI.get('/history-purchase/:id', getBookingByUser)
 
 routerAPI.get('/paypal', (req, res) => {
     res.render('paypal.ejs')
@@ -150,7 +152,7 @@ routerAPI.get('/success', (req, res) => {
             res.status(500).send("Payment execution failed");
         } else {
             // Redirect to the React route handling the confirmation
-            res.redirect(`https://dc-cinema.onrender.com/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            res.redirect(`http://localhost:3001/success?paymentId=${paymentId}&PayerID=${PayerID}`);
         }
     });
 });
@@ -178,7 +180,7 @@ routerAPI.post('/create-payment', async (req, res) => {
                 payment_method: 'paypal'
             },
             redirect_urls: {
-                return_url: 'https://localhost:3000/success',
+                return_url: 'http://localhost:3001/success',
                 cancel_url: 'http://localhost:3000/cancel'
             },
             transactions: [{
