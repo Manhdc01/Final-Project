@@ -18,7 +18,9 @@ const app = express()
 const port = process.env.PORT || 8888//port
 const hostname = process.env.HOST_NAME
 
-app.use(cors("*"));
+app.use(cors({
+    origin: '*'
+}))
 //config req.body
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
