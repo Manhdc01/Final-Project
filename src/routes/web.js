@@ -131,14 +131,15 @@ routerAPI.get('/paypal', (req, res) => {
 
 
 routerAPI.get('/success', (req, res) => {
+    const { total, currency } = req.query;
     var PayerID = req.query.PayerID;
     var paymentId = req.query.paymentId;
     var execute_payment_json = {
         "payer_id": PayerID,
         "transactions": [{
             "amount": {
-                "currency": "USD",
-                "total": "10.00"
+                "currency": currency,
+                "total": total
             }
         }]
     };
@@ -154,6 +155,7 @@ routerAPI.get('/success', (req, res) => {
     });
 });
 routerAPI.post('/create-payment', async (req, res) => {
+    const { total, currency, name } = req.body;
     const clientID = 'ARJRbC7-R6guvxhINoQkkJzriCZ-OfmLAJ-RSYyqVmQ6IWG0K8l-VtVeFa9H6Z9j1QreCfyBxBXRqwJg';
     const secret = 'EGKFytFEyflJKpF-Y7piQXLPDE9r_o9YNCoKDTg6eVYZs9E4YTCeX9Wf92EkoEQHcMq6_yap1VcFPdeY';
     const tokenEndpoint = 'https://api.sandbox.paypal.com/v1/oauth2/token';
@@ -176,21 +178,23 @@ routerAPI.post('/create-payment', async (req, res) => {
                 payment_method: 'paypal'
             },
             redirect_urls: {
-                return_url: 'https://dc-cinema.vercel.app/success',
+                return_url: 'https://localhost:3000/success',
                 cancel_url: 'http://localhost:3000/cancel'
             },
             transactions: [{
                 item_list: {
                     items: [{
-                        name: 'item name',
-                        price: '10.00',
-                        currency: 'USD',
+                        name: name || 'Ticket Purchase', // Using name from request
+                        price: total, // Already converted to USD
+                        currency: currency, // Should be 'USD'
                         quantity: 1
                     }]
                 },
                 amount: {
-                    total: '10.00',
-                    currency: 'USD'
+                    total: total, // Matches the item list total
+                    currency: currency,
+
+
                 },
                 description: 'Description of the payment'
             }]
@@ -207,11 +211,11 @@ routerAPI.post('/create-payment', async (req, res) => {
         console.log(approvalUrl)
         res.json({ approvalUrl: approvalUrl });
     } catch (error) {
-        console.error('Error creating payment:', error);
+        console.error('Error creating payment:', error.message);
         res.status(500).send('An error occurred while creating payment');
-        console.log('PayPal API response:', error.response);
+        console.log('PayPal API response status:', error.response.status); // Log status code của phản hồi lỗi từ PayPal API
+        console.log('PayPal API response data:', error.response.data);
     }
 });
-
 
 module.exports = routerAPI
