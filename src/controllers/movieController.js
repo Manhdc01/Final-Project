@@ -6,21 +6,29 @@ const Movie = require('../models/movie');
 
 const getAllMovie = async (req, res) => {
     try {
-        const page = req.query.page || 1; // Trang mặc định là 1 nếu không có trang được chỉ định
-        const limit = 5; // Số lượng người dùng trên mỗi trang
+        const all = req.query.all; // Kiểm tra xem có yêu cầu trả về tất cả bộ phim không
 
-        const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
+        if (all === 'true') {
+            // Nếu yêu cầu trả về tất cả bộ phim, bỏ qua phân trang
+            const movieList = await Movie.find().populate('category');
+            return res.status(200).json({ errorCode: 0, data: movieList });
+        } else {
+            const page = parseInt(req.query.page) || 1; // Trang mặc định là 1 nếu không có trang được chỉ định
+            const limit = parseInt(req.query.limit) || 5; // Số lượng phim trên mỗi trang mặc định là 5
 
-        // Lấy tổng số người dùng
-        const totalMovies = await Movie.countDocuments();
+            const skip = (page - 1) * limit; // Số lượng bản ghi cần bỏ qua
 
-        // Lấy danh sách người dùng theo trang và giới hạn
-        const movieList = await Movie.find().populate('category').skip(skip).limit(limit);
+            // Lấy tổng số phim
+            const totalMovies = await Movie.countDocuments();
 
-        // Tính tổng số trang
-        const totalPages = Math.ceil(totalMovies / limit);
+            // Lấy danh sách phim theo trang và giới hạn
+            const movieList = await Movie.find().populate('category').skip(skip).limit(limit);
 
-        return res.status(200).json({ errorCode: 0, data: movieList, totalPages, currentPage: page });
+            // Tính tổng số trang
+            const totalPages = Math.ceil(totalMovies / limit);
+
+            return res.status(200).json({ errorCode: 0, data: movieList, totalPages, currentPage: page });
+        }
     } catch (error) {
         console.error(error);
         return res.status(500).json({ errorCode: 1, message: "Internal server error" });

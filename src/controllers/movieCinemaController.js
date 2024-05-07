@@ -5,41 +5,43 @@ const Category = require("../models/category");
 // Controller để thêm phim vào rạp và bảng movieCinema
 const addMovieToCinema = async (req, res) => {
     try {
-        const { adminId, movieId } = req.body;
-
-        // Lấy thông tin của admin từ cơ sở dữ liệu
-        const admin = await User.findById(adminId);
-        if (!admin) {
-            return res.status(404).json({ success: false, message: 'Admin not found' });
-        }
-
-        // Kiểm tra xem admin có vai trò là "admin cinema" không
-        if (admin.role !== "admin cinema") {
-            return res.status(403).json({ success: false, message: 'User is not an admin cinema' });
-        }
-
-        // Lấy thông tin rạp phim mà admin đang quản lý
-        const cinema = admin.cinema;
-        if (!cinema) {
-            return res.status(404).json({ success: false, message: 'No cinema is managed by this admin' });
-        }
-
-        // Kiểm tra xem bộ phim đã được thêm vào rạp này chưa
-        const existingRecord = await MovieCinema.findOne({ movieId, cinemaId: cinema });
+        const { movieId } = req.body;
+        const cinema = req.user.cinema;
+        // check existing
+        const existingRecord = await MovieCinema.findOne({ movieId, cinema });
         if (existingRecord) {
             return res.status(400).json({ success: false, message: 'Movie is already added to this cinema' });
         }
 
-        // Tạo một bản ghi mới trong bảng MovieCinema và lưu vào cơ sở dữ liệu
-        const movieCinema = await MovieCinema.create({ movie: movieId, cinema: cinema });
-
-        // Trả về thông báo thành công
+        const movieCinema = await MovieCinema.create({ movie: movieId, cinema });
         return res.status(200).json({ success: true, data: movieCinema });
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+const deleteMovieFromCinema = async (req, res) => {
+    try {
+        const id = req.params.id;
+        await MovieCinema.deleteOne({ _id: id });
+        return res.status(200).json({ success: true, message: 'Movie deleted from cinema successfully' });
     } catch (error) {
         // Nếu có lỗi, trả về thông báo lỗi
         return res.status(500).json({ success: false, message: error.message });
     }
 };
+
+const updateMovieFromCinema = async (req, res) => {
+    try {
+        let { id, movieId } = req.body;
+        const data = await MovieCinema.updateOne({ _id: id }, { movie: movieId });
+        return res.status(200).json({ success: true, data: data });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+
+}
 
 const getAllMovieAdminCinema = async (req, res) => {
     try {
@@ -69,5 +71,7 @@ const getAllMovieAdminCinema = async (req, res) => {
 
 module.exports = {
     addMovieToCinema,
-    getAllMovieAdminCinema
+    getAllMovieAdminCinema,
+    deleteMovieFromCinema,
+    updateMovieFromCinema
 }

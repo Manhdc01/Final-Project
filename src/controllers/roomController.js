@@ -1,4 +1,4 @@
-const { postCreateRoomService, getAllRoomService } = require('../services/roomService')
+const { postCreateRoomService, getAllRoomService, findRoomsByCinemaService } = require('../services/roomService')
 //create room
 const postCreateRoom = async (req, res) => {
     let { cinema, name, totalSeats } = req.body
@@ -23,7 +23,25 @@ const getAllRoom = async (req, res) => {
         data: allRoom
     })
 }
-//update room
+
+//All rooms in cinema
+const getAllRoomsInCinema = async (req, res) => {
+    const { cinemaId } = req.params;
+
+    try {
+        const rooms = await findRoomsByCinemaService(cinemaId);
+        res.status(200).json({
+            success: true,
+            data: rooms
+        });
+    } catch (error) {
+        console.error('Controller error:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error: Failed to retrieve rooms'
+        });
+    }
+};
 module.exports = {
-    postCreateRoom, getAllRoom
+    postCreateRoom, getAllRoom, getAllRoomsInCinema
 }

@@ -4,8 +4,7 @@ const mongoose = require('mongoose');
 const roomSchema = new mongoose.Schema({
     cinema: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'cinema',
-        required: true
+        ref: 'cinema'
     },
     name: {
         type: String,

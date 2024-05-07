@@ -26,12 +26,14 @@ const postCreateBooking = async (req, res) => {
 
 const saveUserBooking = async (req, res) => {
     try {
-        const { user, showtime, date, totalPrice } = req.body;
+        const { user, showtime, seats, time, date, totalPrice } = req.body;
 
         const booking = await Booking.create({
             user,
             showtime,
             timeOfBooking: date,
+            seats,
+            time,
             totalPrice
         });
         // Trả về response
@@ -61,6 +63,31 @@ const getBookingByUser = async (req, res) => {
     }
 };
 
+// Endpoint để lấy trạng thái ghế cho một showtime cụ thể
+const seatStatus = async (req, res) => {
+    try {
+        const { showtimeId, selectedTime, selectedDate } = req.query;
+        console.log("Received showtimeId:", showtimeId, "time:", selectedTime, "date", selectedDate);
+        // Truy vấn thông tin showtime dựa trên showtimeId
+
+        const bookings = await Booking.find({
+            showtime: showtimeId,
+            timeOfBooking: selectedDate,
+            time: selectedTime
+
+        }).select('seats');  // Chỉ lấy trường 'seats'
+
+        // Trích xuất tất cả ghế từ các booking
+        const allSeats = bookings.map(booking => booking.seats).flat();
+
+        // Trả về kết quả
+        res.status(200).json({ success: true, data: allSeats });
+    } catch (error) {
+        console.error('Error retrieving seats:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while retrieving the seats' });
+    }
+}
+
 module.exports = {
-    saveUserBooking, postCreateBooking, getBookingByUser
+    saveUserBooking, postCreateBooking, getBookingByUser, seatStatus
 };

@@ -91,6 +91,11 @@ const validateUserData = async (req, res, next) => {
     // Nếu mọi thứ đều hợp lệ, tiếp tục xử lý yêu cầu
     next();
 };
+// Middleware để thiết lập tham số 'all' trước khi gọi getAllMovie
+const setAllParam = (req, res, next) => {
+    req.query.all = 'true';
+    next();
+};
 module.exports = {
-    checkLoggedIn, checkRole, validateUserData
+    checkLoggedIn, checkRole, validateUserData, setAllParam
 };

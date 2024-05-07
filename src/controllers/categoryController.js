@@ -15,7 +15,6 @@ const postCreateCategory = async (req, res) => {
         errorCode: 0,
         data: category
     })
-
 }
 const putUpdateCategory = async (req, res) => {
     let { id, name } = req.body

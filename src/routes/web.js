@@ -11,19 +11,20 @@ const { getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvin
     getCinemaByProvince } = require('../controllers/cinemaController')
 const { getAllCategory, postCreateCategory, putUpdateCategory, deleteCategory } = require('../controllers/categoryController')
 const { registerUser, loginUser, requestAccessToken, logOutUser } = require('../controllers/authController')
-const { checkLoggedIn, checkRole, validateUserData } = require('../middleware/authMiddleware')
+const { checkLoggedIn, checkRole, validateUserData, setAllParam } = require('../middleware/authMiddleware')
 const { postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending
     , searchUsersByName, getProfileByToken, updateUserProfileByToken, getAllAdminCinema } = require('../controllers/userController')
 const { changePassword, forgotPassword, resetPassword } = require('../controllers/chagePasswordController')
 const { getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming,
     getMovieTrailer, searchMovieByName, getMovieById } = require('../controllers/movieController')
 const { postCreateSeatPrice, getAllSeatPrice, putUpdateSeatPrice, deleteSeatPrice } = require('../controllers/seatPriceController')
-const { postCreateRoom, getAllRoom } = require('../controllers/roomController')
+const { postCreateRoom, getAllRoom, getAllRoomsInCinema } = require('../controllers/roomController')
 const { postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime,
-    showTimeByDate, showTimeByMovieId } = require('../controllers/showTimeController')
+    showTimeByDate, showTimeByMovieId, checkForOverlap,
+    getAllShowTimesForAdminCinema, postCreateShowTimeForAdminCinema } = require('../controllers/showTimeController')
 const { addFood, getAllFood, putUpdateFood, deleteFood } = require('../controllers/foodController')
-const { getAllMovieAdminCinema, addMovieToCinema } = require('../controllers/movieCinemaController')
-const { postCreateBooking, saveUserBooking, getBookingByUser } = require('../controllers/bookingController')
+const { getAllMovieAdminCinema, addMovieToCinema, deleteMovieFromCinema, updateMovieFromCinema } = require('../controllers/movieCinemaController')
+const { postCreateBooking, saveUserBooking, getBookingByUser, seatStatus } = require('../controllers/bookingController')
 const { createPayment } = require('../controllers/paypalController')
 
 routerAPI.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -76,11 +77,13 @@ routerAPI.get('/profile', checkLoggedIn, getProfileByToken)
 routerAPI.put('/update-profile', checkLoggedIn, updateUserProfileByToken)
 
 routerAPI.get('/all-cinema', checkRole(['admin']), getAllCinema)
+routerAPI.get('/cinemas', checkRole(['admin', 'admin cinema']), setAllParam, getAllCinema)
 routerAPI.post('/create-cinema', checkRole(['admin']), postCreateCinema)
 routerAPI.put('/update-cinema', checkRole(['admin']), putUpdateCinema)
 routerAPI.delete('/delete-cinema/:id', checkRole(['admin']), deleteCinema)
 routerAPI.get('/province-cinema', checkLoggedIn, getProvincesCinema)
 routerAPI.get('/cinema-by-province', checkLoggedIn, getCinemaByProvince)
+routerAPI.get('/all-room-cinema/:cinemaId', checkLoggedIn, getAllRoomsInCinema)
 
 routerAPI.get('/all-category', checkRole(['admin']), getAllCategory)
 routerAPI.post('/create-category', checkRole(['admin']), postCreateCategory)
@@ -88,6 +91,7 @@ routerAPI.put('/update-category', checkRole(['admin']), putUpdateCategory)
 routerAPI.delete('/delete-category/:id', checkRole(['admin']), deleteCategory)
 
 routerAPI.get('/all-movie', checkRole(['admin', 'admin cinema']), getAllMovie)
+routerAPI.get('/movies', checkRole(['admin', 'admin cinema']), setAllParam, getAllMovie)
 routerAPI.post('/create-movie', checkRole(['admin']), postCreateMovie)
 routerAPI.put('/update-movie', checkRole(['admin']), putupdateMovie)
 routerAPI.delete('/delete-movie/:id', checkRole(['admin']), deleteMovie)
@@ -112,6 +116,9 @@ routerAPI.put('/update-show-time', checkRole(['admin']), updateShowTime)
 routerAPI.delete('/delete-show-time/:id', checkRole(['admin']), deleteShowTime)
 routerAPI.get('/showtime/all-dates', checkRole(['admin']), showTimeByDate)
 routerAPI.get('/showtime-by-movie/:movieId', checkLoggedIn, showTimeByMovieId)
+routerAPI.get('/duplicates', checkRole(['admin', 'admin cinema']), checkForOverlap)
+routerAPI.get('/admin-cinema/showtimes', checkRole(['admin cinema']), getAllShowTimesForAdminCinema)
+routerAPI.post('/admin-cinema/create-showtime', checkRole(['admin cinema']), postCreateShowTimeForAdminCinema)
 
 routerAPI.post('/add-food', addFood)
 routerAPI.get('/all-food', checkRole(['admin', 'customer']), getAllFood)
@@ -120,10 +127,13 @@ routerAPI.delete('/delete-food/:id', checkRole(['admin']), deleteFood)
 
 routerAPI.get('/all-movie-admin-cinema', checkRole(['admin cinema']), getAllMovieAdminCinema)
 routerAPI.post('/add-movie-to-cinema', checkRole(['admin cinema']), addMovieToCinema)
+routerAPI.put('/update-movie-from-cinema', checkRole(['admin cinema']), updateMovieFromCinema)
+routerAPI.delete('/delete-movie-from-cinema/:id', checkRole(['admin cinema']), deleteMovieFromCinema)
 
 routerAPI.post('/create-booking', postCreateBooking)
 routerAPI.post('/save-booking', saveUserBooking)
 routerAPI.get('/history-purchase/:id', getBookingByUser)
+routerAPI.get('/seats/status', seatStatus)
 
 routerAPI.get('/paypal', (req, res) => {
     res.render('paypal.ejs')
@@ -152,7 +162,7 @@ routerAPI.get('/success', (req, res) => {
             res.status(500).send("Payment execution failed");
         } else {
             // Redirect to the React route handling the confirmation
-            res.redirect(`http://localhost:3001/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            res.status(200).send(`http://localhost:3000/success?paymentId=${paymentId}&PayerID=${PayerID}`);
         }
     });
 });

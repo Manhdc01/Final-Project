@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Room = require('./room');
 
 // Define the Cinema schema
 const cinemaSchema = new mongoose.Schema({
@@ -24,8 +25,7 @@ const cinemaSchema = new mongoose.Schema({
     },
     movie: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'movie',
-        required: true
+        ref: 'movie'
     }
 },
     {

@@ -1,8 +1,11 @@
 const ShowTime = require('../models/showtime')
-const { postCreateShowTimeService, getAllShowTimeService, updateShowTimeService, deleteShowTimeService } = require('../services/showTimeService')
+const { postCreateShowTimeService, getAllShowTimeService, updateShowTimeService, deleteShowTimeService,
+    getAllShowTimesForAdminCinemaService, postCreateShowTimeForAdminService,putUpdateShowTimeForAdminService
+} = require('../services/showTimeService')
 //create showTime
 const postCreateShowTime = async (req, res) => {
     let { cinema, movie, room, startDate, endDate, times } = req.body
+    console.log('Received room data:', room);
     let showTimeData = {
         cinema,
         movie,
@@ -143,7 +146,70 @@ const showTimeByMovieId = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+const checkForOverlap = async (req, res) => {
+    const { cinema, room, startDate, endDate } = req.query;
+
+    try {
+        const showTimes = await ShowTime.find({
+            cinema: cinema,
+            room: room,
+            startDate: { $lte: new Date(endDate) },
+            endDate: { $gte: new Date(startDate) },
+        })
+
+        res.status(200).json({ data: showTimes });
+    } catch (error) {
+        console.error("Error checking for overlap:", error);
+        res.status(500).json({ message: "An error occurred while checking for overlap" });
+    }
+}
+const getAllShowTimesForAdminCinema = async (req, res) => {
+    const adminCinemaId = req.user.id; // Lấy ID của tài khoản admin-cinema từ thông tin đăng nhập
+    console.log("Received adminCinemaId:", adminCinemaId)
+    const cinemaId = req.user.cinema // Lấy ID của rạp từ URL
+    console.log("Received cinemaId:", cinemaId)
+
+    try {
+        // Gọi hàm xử lý logic để lấy tất cả suất chiếu của tài khoản admin-cinema quản lý rạp cụ thể
+        const showTimes = await getAllShowTimesForAdminCinemaService(cinemaId);
+        // Trả về kết quả cho client
+        res.status(200).json({ data: showTimes });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+const postCreateShowTimeForAdminCinema = async (req, res) => {
+    const { cinema, movie, room, startDate, endDate, times } = req.body;
+    const showTimeData = {
+        cinema,
+        movie,
+        room,
+        startDate,
+        endDate,
+        times
+    };
+    const showTime = await postCreateShowTimeForAdminService(showTimeData);
+    res.status(200).json({ data: showTime });
+};
+const putUpdateShowTimeForAdminCinema = async (req, res) => {
+    const { id, cinema, movie, room, startDate, endDate, times } = req.body;
+
+    const showTimeData = {
+        cinema,
+        movie,
+        room,
+        startDate,
+        endDate,
+        times
+    };
+    const showTime = await putUpdateShowTimeForAdminService(id, showTimeData);
+    res.status(200).json({ data: showTime });
+};
+
 module.exports = {
-    postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime, showTimeByDate, showTimeByMovieId
+    postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime, showTimeByDate, showTimeByMovieId, checkForOverlap,
+    getAllShowTimesForAdminCinema, postCreateShowTimeForAdminCinema
 }
 
