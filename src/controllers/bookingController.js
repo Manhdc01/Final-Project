@@ -120,12 +120,21 @@ const percentageNorAndVIPSeats = async (req, res) => {
         const percentVipSeats = (totalVipSeats / totalSeats) * 100;
         const percentNorSeats = (totalNorSeats / totalSeats) * 100;
 
+        // Trả về dữ liệu dưới dạng danh sách các đối tượng
+        const result = [
+            {
+                Seat: "VIP",
+                percentage: percentVipSeats.toFixed(2)
+            },
+            {
+                Seat: "Normal",
+                percentage: percentNorSeats.toFixed(2)
+            }
+        ];
+
         res.status(200).json({
             success: true,
-            data: {
-                percentVipSeats,
-                percentNorSeats
-            }
+            data: result
         });
     } catch (error) {
         console.error('Error:', error);
@@ -279,50 +288,54 @@ const revenueByDayForAdminCinema = async (req, res) => {
     }
 }
 const percentageNorAndVIPSeatsForAdminCinema = async (req, res) => {
-    try {
-        // Lấy ID của rạp mà admin đang quản lý từ thông tin admin đăng nhập
-        const cinemaId = req.user.cinema;
+    // Lấy ID của rạp mà admin đang quản lý từ thông tin admin đăng nhập
+    const cinemaId = req.user.cinema;
 
-        // Truy vấn tất cả các booking từ cơ sở dữ liệu
-        const bookings = await Booking.find();
+    // Truy vấn tất cả các booking từ cơ sở dữ liệu
+    const bookings = await Booking.find();
 
-        // Tính tổng số ghế VIP và thường cho rạp đó
-        let totalVipSeats = 0;
-        let totalNorSeats = 0;
+    // Tính tổng số ghế VIP và thường cho rạp đó
+    let totalVipSeats = 0;
+    let totalNorSeats = 0;
 
-        for (const booking of bookings) {
-            // Lấy thông tin về showtime từ booking
-            const showtime = await ShowTime.findById(booking.showtime);
+    for (const booking of bookings) {
+        // Lấy thông tin về showtime từ booking
+        const showtime = await ShowTime.findById(booking.showtime);
 
-            // Kiểm tra xem showtime và cinemaId đều tồn tại và có giá trị phù hợp
-            if (showtime && showtime.cinema && showtime.cinema.toString() === cinemaId.toString()) {
-                const seats = booking.seats.split(',');
-                seats.forEach(seat => {
-                    if (seat.includes('(VIP)')) {
-                        totalVipSeats++;
-                    } else {
-                        totalNorSeats++;
-                    }
-                });
-            }
+        // Kiểm tra xem showtime và cinemaId đều tồn tại và có giá trị phù hợp
+        if (showtime && showtime.cinema && showtime.cinema.toString() === cinemaId.toString()) {
+            const seats = booking.seats.split(',');
+            seats.forEach(seat => {
+                if (seat.includes('(VIP)')) {
+                    totalVipSeats++;
+                } else {
+                    totalNorSeats++;
+                }
+            });
         }
-
-        // Tính phần trăm số ghế VIP và số ghế thường
-        const totalSeats = totalVipSeats + totalNorSeats;
-        const percentVipSeats = (totalVipSeats / totalSeats) * 100;
-        const percentNorSeats = (totalNorSeats / totalSeats) * 100;
-
-        res.status(200).json({
-            success: true,
-            data: {
-                percentVipSeats,
-                percentNorSeats
-            }
-        });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal server error' });
     }
+
+    // Tính phần trăm số ghế VIP và số ghế thường
+    const totalSeats = totalVipSeats + totalNorSeats;
+    const percentVipSeats = (totalVipSeats / totalSeats) * 100;
+    const percentNorSeats = (totalNorSeats / totalSeats) * 100;
+
+    // Trả về dữ liệu dưới dạng danh sách các đối tượng
+    const result = [
+        {
+            Seat: "VIP",
+            percentage: percentVipSeats.toFixed(2)
+        },
+        {
+            Seat: "Normal",
+            percentage: percentNorSeats.toFixed(2)
+        }
+    ];
+
+    res.status(200).json({
+        success: true,
+        data: result
+    });
 }
 const totalTicketSoldInCinema = async (req, res) => {
     try {
