@@ -67,8 +67,7 @@ const postCreateMovie = async (req, res) => {
         });
     }
 }
-const postCreateMovieByAdminCinema = async (req, res) => {
-}
+
 const putupdateMovie = async (req, res) => {
     let { id, name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body
     let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
@@ -169,7 +168,18 @@ const getMovieById = async (req, res) => {
     }
 }
 
+const getTotalMovies = async (req, res) => {
+    try {
+        const count = await Movie.countDocuments({});
+        console.log('Total number of movies:', count);
+        return res.status(200).json({ errorCode: 0, data: count });
+    } catch (error) {
+        console.error('Error fetching total number of movies:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     getAllMovie, postCreateMovie, putupdateMovie, deleteMovie, getMovieNowShowing, getMovieUpcoming, getMovieTrailer,
-    searchMovieByName, getMovieById
+    searchMovieByName, getMovieById, getTotalMovies
 }

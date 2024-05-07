@@ -229,10 +229,31 @@ const updateUserProfileByToken = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+const totalAccountCustomer = async (req, res) => {
+        const totalAccount = await User.countDocuments({ role: 'customer' });
+        return res.status(200).json({
+            errorCode: 0,
+            data: totalAccount
+        });
 
+}
+const totalAccountStaff = async (req, res) => {
+    const totalAccount = await User.countDocuments({ role: 'staff' });
+    return res.status(200).json({
+        errorCode: 0,
+        data: totalAccount
+    });
+}
+const totalAccountStaffInCinema = async (req, res) => {
+    const totalAccount = await User.countDocuments({ role: 'staff', cinema: req.params.cinemaId });
+    return res.status(200).json({
+        errorCode: 0,
+        data: totalAccount
+    });
+}
 
 
 module.exports = {
     postCreateUser, getAllUser, putUpdateUser, deleteUser, getSortedUsersAscending, getSortedUsersDescending, searchUsersByName,
-    getProfileByToken, updateUserProfileByToken, getAllAdminCinema
+    getProfileByToken, updateUserProfileByToken, getAllAdminCinema, totalAccountCustomer, totalAccountStaff,totalAccountStaffInCinema
 }

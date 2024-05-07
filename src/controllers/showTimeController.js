@@ -1,6 +1,7 @@
 const ShowTime = require('../models/showtime')
 const { postCreateShowTimeService, getAllShowTimeService, updateShowTimeService, deleteShowTimeService,
-    getAllShowTimesForAdminCinemaService, postCreateShowTimeForAdminService,putUpdateShowTimeForAdminService
+    getAllShowTimesForAdminCinemaService, postCreateShowTimeForAdminService, putUpdateShowTimeForAdminService,
+    deleteShowTimeForAdminService
 } = require('../services/showTimeService')
 //create showTime
 const postCreateShowTime = async (req, res) => {
@@ -106,6 +107,45 @@ const showTimeByDate = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+const showTimeByCinema = async (req, res) => {
+    const cinemaId = req.user.cinema // Lấy ID của rạp từ URL
+    console.log("Received cinemaId:", cinemaId)
+    try {
+        const showTimes = await ShowTime.find({ cinema: cinemaId }) // Lọc suất chiếu theo cinema ID
+            .populate('movie')
+            .populate('room')
+            .populate('cinema');
+
+        const dailyShowTimes = {};
+
+        showTimes.forEach(showTime => {
+            const startDate = new Date(showTime.startDate);
+            const endDate = new Date(showTime.endDate);
+
+            // Tạo một danh sách các ngày từ startDate đến endDate
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                const dateKey = d.toISOString().split('T')[0];
+                if (!dailyShowTimes[dateKey]) {
+                    dailyShowTimes[dateKey] = [];
+                }
+
+                // Thêm suất chiếu vào mỗi ngày phù hợp
+                dailyShowTimes[dateKey].push({
+                    id: showTime._id,
+                    times: showTime.times,
+                    movie: showTime.movie.name, // Trả về tên phim
+                    room: showTime.room.name, // Trả về tên phòng chiếu
+                    cinema: showTime.cinema.name // Trả về tên rạp
+                });
+            }
+        });
+
+        res.json({ data: dailyShowTimes });
+    } catch (error) {
+        console.error('Error fetching showtimes for specified cinema:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
 const showTimeByMovieId = async (req, res) => {
     try {
         console.log("Received movieId:", req.params.movieId);
@@ -208,8 +248,15 @@ const putUpdateShowTimeForAdminCinema = async (req, res) => {
     res.status(200).json({ data: showTime });
 };
 
+const deleteShowTimeForAdminCinema = async (req, res) => {
+    const id = req.params.id;
+    const showTime = await deleteShowTimeForAdminService(id);
+    res.status(200).json({ data: showTime });
+};
+
 module.exports = {
     postCreateShowTime, getAllShowTime, updateShowTime, deleteShowTime, showTimeByDate, showTimeByMovieId, checkForOverlap,
-    getAllShowTimesForAdminCinema, postCreateShowTimeForAdminCinema
+    getAllShowTimesForAdminCinema, postCreateShowTimeForAdminCinema, putUpdateShowTimeForAdminCinema, deleteShowTimeForAdminCinema,
+    showTimeByCinema
 }
 

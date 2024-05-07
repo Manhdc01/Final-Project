@@ -34,8 +34,10 @@ const deleteMovieFromCinema = async (req, res) => {
 
 const updateMovieFromCinema = async (req, res) => {
     try {
-        let { id, movieId } = req.body;
-        const data = await MovieCinema.updateOne({ _id: id }, { movie: movieId });
+        let { id, movie } = req.body;
+        const cinema = req.user.cinema;
+
+        const data = await MovieCinema.updateOne({ _id: id }, { movie: movie, cinema: cinema});
         return res.status(200).json({ success: true, data: data });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
@@ -68,10 +70,18 @@ const getAllMovieAdminCinema = async (req, res) => {
         return res.status(500).json({ errorCode: 1, message: "Internal server error" });
     }
 }
-
+const totalMovieForAdminCinema = async (req, res) => {
+    try {
+        const totalMovies = await MovieCinema.countDocuments();
+        return res.status(200).json({ success: true, data: totalMovies });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+}
 module.exports = {
     addMovieToCinema,
     getAllMovieAdminCinema,
     deleteMovieFromCinema,
-    updateMovieFromCinema
+    updateMovieFromCinema,
+    totalMovieForAdminCinema
 }

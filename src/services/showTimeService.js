@@ -40,8 +40,11 @@ const putUpdateShowTimeForAdminService = async (id, showTime) => {
     let showTimeData = await ShowTime.updateOne({ _id: id }, { $set: showTime })
     return showTimeData
 }
-
+const deleteShowTimeForAdminService = async (id) => {
+    let showTime = await ShowTime.deleteOne({ _id: id })
+    return showTime
+}
 module.exports = {
     postCreateShowTimeService, getAllShowTimeService, updateShowTimeService, deleteShowTimeService, getAllShowTimesForAdminCinemaService,
-    postCreateShowTimeForAdminService, putUpdateShowTimeForAdminService
+    postCreateShowTimeForAdminService, putUpdateShowTimeForAdminService, deleteShowTimeForAdminService
 }

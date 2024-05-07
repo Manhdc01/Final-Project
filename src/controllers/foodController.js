@@ -48,6 +48,26 @@ const putUpdateFood = async (req, res) => {
         name,
         price
     }
+    let imageUploadResult = {}
+    if (!req.files || !req.files.image) {
+        console.log("No file uploaded");
+    } else {
+        let file_dir = req.files.image;
+        let fileUploadResult = await uploadSingleFile(file_dir);
+        let file_addr = fileUploadResult.path;
+        // console.log("Url image:", file_addr);
+        // upload to imgur
+        imageUploadResult = await uploadImage(file_addr);
+        // console.log(">>>>check", imageUploadResult)
+        foodData.image = imageUploadResult.imageUrl
+        // remove file from local
+        try {
+            fs.unlinkSync(file_addr);
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
     let food = await putUpdateFoodService(id, foodData)
     res.status(200).json({
         success: true,

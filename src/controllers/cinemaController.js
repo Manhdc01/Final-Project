@@ -124,6 +124,10 @@ const addRoomsForCinema = async (cinemaId) => {
     }
 }
 
+const totalCinema = async (req, res) => {
+    const totalCinema = await Cinema.countDocuments();
+    return res.status(200).json({ errorCode: 0, data: totalCinema });
+}
 module.exports = {
-    getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvincesCinema, getCinemaByProvince
+    getAllCinema, postCreateCinema, putUpdateCinema, deleteCinema, getProvincesCinema, getCinemaByProvince,totalCinema
 }
