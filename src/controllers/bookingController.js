@@ -1,5 +1,6 @@
 const Booking = require("../models/booking");
 const Room = require("../models/room");
+const SeatStatus = require("../models/seatStatus");
 const ShowTime = require("../models/showtime");
 const User = require("../models/user");
 const { postCreateBookingServcie, getBookingByUserService } = require("../services/bookingService");
@@ -392,7 +393,51 @@ const totalRevenueInCinema = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+const saveSeatsHold = async (req, res) => {
+    try {
+        const { user, seatHold, holdExpires } = req.body;
+        console.log('Received seat hold:', holdExpires);
+
+        const seatStatus = await SeatStatus.create({
+            user,
+            seatHold,
+            isHold: true,
+            holdExpires
+        });
+
+        res.status(201).json({ message: 'Seat hold saved successfully', data: seatStatus });
+    } catch (error) {
+        console.error('Error saving seat hold:', error);
+        return res.status(500).json({ success: false, message: 'An error occurred while saving the seat hold' });
+    }
+}
+
+const seatStatusHold  = async (req, res) => {
+    try {
+        // Lấy thông tin đầy đủ của các ghế đang được hold từ cơ sở dữ liệu
+        const heldSeats = await SeatStatus.find({ isHold: true });
+
+        // Tính thời điểm hiện tại
+        const currentTimestamp = new Date();
+        console.log('Current timestamp:', currentTimestamp)
+
+        // Lọc ra các ghế đang được hold trong khoảng thời gian dưới 5 phút
+        const heldSeatsWithinFiveMinutes = heldSeats.filter(seat => seat.holdExpires >= currentTimestamp);
+
+        if (heldSeatsWithinFiveMinutes.length === 0) {
+            return res.status(404).json({ success: false, message: 'No seats are currently on hold within the last 5 minutes' });
+        }
+         // Tạo một mảng mới chỉ chứa thông tin về ghế
+         const seatHoldList = heldSeatsWithinFiveMinutes.map(seat => seat.seatHold)
+
+        res.status(200).json({ success: true, data: seatHoldList });
+    } catch (error) {
+        console.error('Error retrieving held seats:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while retrieving held seats' });
+    }
+}
 module.exports = {
     saveUserBooking, postCreateBooking, getBookingByUser, seatStatus, percentageNorAndVIPSeats, revenueByDay,
-    revenueByDayForAdminCinema, percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema
+    revenueByDayForAdminCinema, percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema,
+    saveSeatsHold,seatStatusHold
 };

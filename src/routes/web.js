@@ -29,8 +29,9 @@ const { getAllMovieAdminCinema, addMovieToCinema, deleteMovieFromCinema, updateM
     totalMovieForAdminCinema
 } = require('../controllers/movieCinemaController')
 const { postCreateBooking, saveUserBooking, getBookingByUser, seatStatus,
-    getSalesDataByDay, percentageNorAndVIPSeats, revenueByDay, revenueByDayForAdminCinema,
-    percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema } = require('../controllers/bookingController')
+     percentageNorAndVIPSeats, revenueByDay, revenueByDayForAdminCinema,
+    percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema,
+    saveSeatsHold, seatStatusHold } = require('../controllers/bookingController')
 const { createPayment } = require('../controllers/paypalController')
 
 routerAPI.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -155,6 +156,8 @@ routerAPI.get('/seat-percentages-admin-cinema', checkRole(['admin cinema']), per
 routerAPI.get('/revenue-admin-cinema', checkRole(['admin cinema']), revenueByDayForAdminCinema)
 routerAPI.get('/total-ticket-sold-in-cinema', checkRole(['admin cinema']), totalTicketSoldInCinema)
 routerAPI.get('/total-revenue-in-cinema', checkRole(['admin cinema']), totalRevenueInCinema);
+routerAPI.post('/hold-seats', saveSeatsHold)
+routerAPI.get('/all-seats-hold',seatStatusHold )
 
 
 routerAPI.get('/paypal', (req, res) => {
