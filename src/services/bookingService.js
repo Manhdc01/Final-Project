@@ -24,36 +24,6 @@ const getBookingByUserService = async (userId) => {
     }
 };
 
-const getSalesDataByDayService = async () => {
-    try {
-        const result = await Booking.aggregate([
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$timeOfBooking" },
-                        month: { $month: "$timeOfBooking" },
-                        day: { $dayOfMonth: "$timeOfBooking" }
-                    },
-                    totalSales: { $sum: "$totalPrice" },
-                    totalTickets: { $sum: 1 }
-                }
-            },
-            {
-                $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 }
-            }
-        ]);
-
-        return result.map(item => ({
-            date: new Date(item._id.year, item._id.month - 1, item._id.day),
-            totalSales: item.totalSales,
-            totalTickets: item.totalTickets
-        }));
-    } catch (error) {
-        console.error("Error in getting sales data by day:", error);
-        throw error;
-    }
-};
-
 module.exports = {
-    postCreateBookingServcie, getBookingByUserService, getSalesDataByDayService
+    postCreateBookingServcie, getBookingByUserService
 }
