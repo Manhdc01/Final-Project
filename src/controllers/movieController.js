@@ -36,7 +36,7 @@ const getAllMovie = async (req, res) => {
 }
 const postCreateMovie = async (req, res) => {
     let { name, description, director, performer, category, premiere, time, language, trailerUrl, status } = req.body;
-    let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
+    let dataMovie = { name,description, director, performer, category, premiere, time, language, trailerUrl, status }
     let imageUploadResult = {}
     if (!req.files || !req.files.poster) {
         console.log("No file uploaded");
@@ -70,7 +70,7 @@ const postCreateMovie = async (req, res) => {
 
 const putupdateMovie = async (req, res) => {
     let { id, name,description, director, performer, category, premiere, time, language, trailerUrl, status } = req.body
-    let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
+    let dataMovie = { name,description, director, performer, category, premiere, time, language, trailerUrl, status }
     const existingMovie = await Movie.findById(id);
     // Initialize userData.image with existing image to retain it if no new image is uploaded.
     dataMovie.poster = existingMovie.poster;
