@@ -395,11 +395,14 @@ const totalRevenueInCinema = async (req, res) => {
 }
 const saveSeatsHold = async (req, res) => {
     try {
-        const { user, seatHold, holdExpires } = req.body;
-        console.log('Received seat hold:', holdExpires);
+        const { user, showtime, timeOfBooking, time, seatHold, holdExpires } = req.body;
+        console.log('Received seat hold:', req.body);
 
         const seatStatus = await SeatStatus.create({
             user,
+            showtime,
+            timeOfBooking,
+            time,
             seatHold,
             isHold: true,
             holdExpires
@@ -412,23 +415,45 @@ const saveSeatsHold = async (req, res) => {
     }
 }
 
-const seatStatusHold  = async (req, res) => {
+const seatStatusHold = async (req, res) => {
+    // try {
+    //     // Lấy thông tin đầy đủ của các ghế đang được hold từ cơ sở dữ liệu
+    //     const heldSeats = await SeatStatus.find({ isHold: true });
+
+    //     // Tính thời điểm hiện tại
+    //     const currentTimestamp = new Date();
+    //     console.log('Current timestamp:', currentTimestamp)
+
+    //     // Lọc ra các ghế đang được hold trong khoảng thời gian dưới 5 phút
+    //     const heldSeatsWithinFiveMinutes = heldSeats.filter(seat => seat.holdExpires >= currentTimestamp);
+
+    //     if (heldSeatsWithinFiveMinutes.length === 0) {
+    //         return res.status(404).json({ success: false, message: 'No seats are currently on hold within the last 5 minutes' });
+    //     }
+    //      // Tạo một mảng mới chỉ chứa thông tin về ghế
+    //     //  const seatHoldList = heldSeatsWithinFiveMinutes.map(seat => seat.seatHold)
+
+    //     res.status(200).json({ success: true, data: heldSeatsWithinFiveMinutes });
+    // } catch (error) {
+    //     console.error('Error retrieving held seats:', error);
+    //     res.status(500).json({ success: false, message: 'An error occurred while retrieving held seats' });
+    // }
     try {
-        // Lấy thông tin đầy đủ của các ghế đang được hold từ cơ sở dữ liệu
-        const heldSeats = await SeatStatus.find({ isHold: true });
-
-        // Tính thời điểm hiện tại
+        // Lấy tham số từ request
+        const { showtimeId, selectedTime, selectedDate } = req.query;
         const currentTimestamp = new Date();
-        console.log('Current timestamp:', currentTimestamp)
-
-        // Lọc ra các ghế đang được hold trong khoảng thời gian dưới 5 phút
+        const heldSeats = await SeatStatus.find({
+            showtime: showtimeId,
+            timeOfBooking: selectedDate,
+            time: selectedTime,
+            isHold: true
+        });
+        // Lọc ra các ghế đang được hold dựa trên showtime, time và timeofbooking
         const heldSeatsWithinFiveMinutes = heldSeats.filter(seat => seat.holdExpires >= currentTimestamp);
 
         if (heldSeatsWithinFiveMinutes.length === 0) {
-            return res.status(404).json({ success: false, message: 'No seats are currently on hold within the last 5 minutes' });
+            return res.status(404).json({ success: false, message: 'No seats are currently on hold within the specified time range' });
         }
-         // Tạo một mảng mới chỉ chứa thông tin về ghế
-        //  const seatHoldList = heldSeatsWithinFiveMinutes.map(seat => seat.seatHold)
 
         res.status(200).json({ success: true, data: heldSeatsWithinFiveMinutes });
     } catch (error) {
@@ -446,5 +471,5 @@ const deleteSeatsHold = async (req, res) => {
 module.exports = {
     saveUserBooking, postCreateBooking, getBookingByUser, seatStatus, percentageNorAndVIPSeats, revenueByDay,
     revenueByDayForAdminCinema, percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema,
-    saveSeatsHold,seatStatusHold, deleteSeatsHold
+    saveSeatsHold, seatStatusHold, deleteSeatsHold
 };
