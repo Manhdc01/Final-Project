@@ -229,8 +229,6 @@ routerAPI.post('/create-payment', async (req, res) => {
                 amount: {
                     total: total, // Matches the item list total
                     currency: currency,
-
-
                 },
                 description: 'Description of the payment'
             }]
