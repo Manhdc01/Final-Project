@@ -428,16 +428,23 @@ const seatStatusHold  = async (req, res) => {
             return res.status(404).json({ success: false, message: 'No seats are currently on hold within the last 5 minutes' });
         }
          // Tạo một mảng mới chỉ chứa thông tin về ghế
-         const seatHoldList = heldSeatsWithinFiveMinutes.map(seat => seat.seatHold)
+        //  const seatHoldList = heldSeatsWithinFiveMinutes.map(seat => seat.seatHold)
 
-        res.status(200).json({ success: true, data: seatHoldList });
+        res.status(200).json({ success: true, data: heldSeatsWithinFiveMinutes });
     } catch (error) {
         console.error('Error retrieving held seats:', error);
         res.status(500).json({ success: false, message: 'An error occurred while retrieving held seats' });
     }
 }
+
+const deleteSeatsHold = async (req, res) => {
+    const id = req.params.id;
+    let deleteSeatsHold = await SeatStatus.deleteOne({ _id: id });
+    console.log("Delete Seats Hold", deleteSeatsHold)
+    res.status(200).json({ success: true, data: deleteSeatsHold });
+}
 module.exports = {
     saveUserBooking, postCreateBooking, getBookingByUser, seatStatus, percentageNorAndVIPSeats, revenueByDay,
     revenueByDayForAdminCinema, percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema,
-    saveSeatsHold,seatStatusHold
+    saveSeatsHold,seatStatusHold, deleteSeatsHold
 };
