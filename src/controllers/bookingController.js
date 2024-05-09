@@ -27,7 +27,7 @@ const postCreateBooking = async (req, res) => {
 
 const saveUserBooking = async (req, res) => {
     try {
-        const { user, showtime, seats, time, date, totalPrice } = req.body;
+        const { user, showtime, seats, time, date, totalPrice, food } = req.body;
 
         const booking = await Booking.create({
             user,
@@ -35,7 +35,8 @@ const saveUserBooking = async (req, res) => {
             timeOfBooking: date,
             seats,
             time,
-            totalPrice
+            totalPrice,
+            food
         });
         // Trả về response
         res.status(201).json({ message: 'Booking saved successfully', booking: booking });
@@ -177,40 +178,7 @@ const revenueByDay = async (req, res) => {
 }
 
 const revenueByDayForAdminCinema = async (req, res) => {
-    // try {
-    //     // Lấy thông tin rạp mà admin quản lý từ thông tin admin đăng nhập
-    //     const cinemaId = req.user.cinema;
 
-    //     // Truy vấn tất cả các đặt vé từ cơ sở dữ liệu MongoDB
-    //     const bookings = await Booking.find();
-
-    //     // Tạo một đối tượng để lưu trữ tổng số vé và tổng doanh thu theo từng ngày
-    //     const revenueByDay = {};
-
-    //     // Lặp qua từng đặt vé và tính tổng số vé và tổng doanh thu theo từng ngày
-    //     for (const booking of bookings) {
-    //         // Lấy thông tin về rạp từ bảng Showtime
-    //         const showtime = await ShowTime.findById(booking.showtime);
-    //         console.log('Showtime:', showtime, 'Cinema:', cinemaId)
-    //         if (showtime && showtime.cinema.toString() === cinemaId.toString()) {
-    //             const bookingDate = new Date(booking.timeOfBooking).toISOString().split('T')[0];
-
-    //             // Kiểm tra xem ngày này đã được thêm vào đối tượng revenueByDay chưa
-    //             if (!revenueByDay[bookingDate]) {
-    //                 revenueByDay[bookingDate] = { totalTicketsSold: 0, totalRevenue: 0 };
-    //             }
-
-    //             // Đếm số vé bán ra và tính tổng doanh thu
-    //             const seats = booking.seats.split(',').length;
-    //             revenueByDay[bookingDate].totalTicketsSold += seats;
-    //             revenueByDay[bookingDate].totalRevenue += booking.totalPrice;
-    //         }
-    //     }
-    //     res.status(200).json({ success: true, data: revenueByDay });
-    // } catch (error) {
-    //     console.error('Error calculating revenue by day:', error);
-    //     res.status(500).json({ error: 'Internal server error' });
-    // }
     try {
         // Lấy thông tin rạp mà admin quản lý từ thông tin admin đăng nhập
         const cinemaId = req.user.cinema;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Food = require('./food');
 
 const bookingSchema = new mongoose.Schema({
     user: {
@@ -17,6 +18,9 @@ const bookingSchema = new mongoose.Schema({
     },
     seats: {
         type: String,
+    },
+    food:{
+        type:String
     },
     time: {
         type: String,
