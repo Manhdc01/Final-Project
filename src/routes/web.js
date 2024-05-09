@@ -55,7 +55,7 @@ routerAPI.get('/google/redirect',
         res.cookie('accessToken', token, { httpOnly: true, secure: true }); // Ensure 'secure' is true in production
         // Optionally set non-sensitive data in a non-HTTP-only cookie or send it as JSON
         res.cookie('userInfo', JSON.stringify({ name: req.user.name, image: req.user.image }), { secure: true, httpOnly: false });
-        res.redirect(`http://localhost:3001/home?token=${token}`); // Make sure the redirect URL is correct for your front-end app
+        res.redirect(`https://dc-cinema.vercel.app/home?token=${token}`); // Make sure the redirect URL is correct for your front-end app
     });
 routerAPI.get('/login', (req, res) => {
     res.render('login.ejs')
