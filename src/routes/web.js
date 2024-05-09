@@ -29,7 +29,7 @@ const { getAllMovieAdminCinema, addMovieToCinema, deleteMovieFromCinema, updateM
     totalMovieForAdminCinema
 } = require('../controllers/movieCinemaController')
 const { postCreateBooking, saveUserBooking, getBookingByUser, seatStatus,
-     percentageNorAndVIPSeats, revenueByDay, revenueByDayForAdminCinema,
+    percentageNorAndVIPSeats, revenueByDay, revenueByDayForAdminCinema,
     percentageNorAndVIPSeatsForAdminCinema, totalTicketSoldInCinema, totalRevenueInCinema,
     saveSeatsHold, seatStatusHold } = require('../controllers/bookingController')
 const { createPayment } = require('../controllers/paypalController')
@@ -157,7 +157,7 @@ routerAPI.get('/revenue-admin-cinema', checkRole(['admin cinema']), revenueByDay
 routerAPI.get('/total-ticket-sold-in-cinema', checkRole(['admin cinema']), totalTicketSoldInCinema)
 routerAPI.get('/total-revenue-in-cinema', checkRole(['admin cinema']), totalRevenueInCinema);
 routerAPI.post('/hold-seats', saveSeatsHold)
-routerAPI.get('/all-seats-hold',seatStatusHold )
+routerAPI.get('/all-seats-hold', seatStatusHold)
 
 
 routerAPI.get('/paypal', (req, res) => {
@@ -166,8 +166,61 @@ routerAPI.get('/paypal', (req, res) => {
 
 // routerAPI.post('/create-payment', checkLoggedIn, createPayment);
 
+// routerAPI.get('/success', (req, res) => {
+//     // const { total, currency } = req.query;
+//     // var PayerID = req.query.PayerID;
+//     // var paymentId = req.query.paymentId;
+//     // var execute_payment_json = {
+//     //     "payer_id": PayerID,
+//     //     "transactions": [{
+//     //         "amount": {
+//     //             "currency": currency,
+//     //             "total": total
+//     //         }
+//     //     }]
+//     // };
+
+//     // paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+//     //     if (error) {
+//     //         console.error(error.response);
+//     //         res.status(500).send("Payment execution failed");
+//     //     } else {
+//     //         // Redirect to the React route handling the confirmation
+//     //         res.status(200).send(`http://localhost:3001/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+//     //     }
+//     // });
+//     const { total, currency } = req.query;
+//     var PayerID = req.query.PayerID;
+//     var paymentId = req.query.paymentId;
+//     var execute_payment_json = {
+//         "payer_id": PayerID,
+//         "transactions": [{
+//             "amount": {
+//                 "currency": currency,
+//                 "total": total
+//             }
+//         }]
+//     };
+
+//     paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+//         if (error) {
+//             console.error(error.response);
+//             res.status(500).json({ error: "Payment execution failed", details: error.response });
+//         } else {
+//             // Trả về JSON chứa kết quả thành công và các thông tin liên quan
+//             res.status(200).json({
+//                 message: "Payment executed successfully",
+//                 paymentId: paymentId,
+//                 PayerID: PayerID,
+//                 paymentDetails: payment
+//             });
+//         }
+//     });
+// });
 routerAPI.get('/success', (req, res) => {
     const { total, currency } = req.query;
+    console.log(req.query)
+    console.log('Total:', total, 'Currency:', currency)
     var PayerID = req.query.PayerID;
     var paymentId = req.query.paymentId;
     var execute_payment_json = {
@@ -183,73 +236,136 @@ routerAPI.get('/success', (req, res) => {
     paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
         if (error) {
             console.error(error.response);
-            res.status(500).send("Payment execution failed");
+            res.status(500).json({ error: "Payment execution failed", details: error.response });
         } else {
-            // Redirect to the React route handling the confirmation
-            res.status(200).send(`https://dc-cinema.vercel.app/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            if (payment.transactions[0].amount.total !== total || payment.transactions[0].amount.currency !== currency) {
+                res.status(400).json({ error: "Transaction amount mismatch" });
+            } else {
+                res.status(200).json({
+                    message: "Payment executed successfully",
+                    paymentId: paymentId,
+                    PayerID: PayerID,
+                    paymentDetails: payment
+                });
+            }
         }
     });
 });
+
 routerAPI.post('/create-payment', async (req, res) => {
+    // const { total, currency, name } = req.body;
+    // const clientID = 'ARJRbC7-R6guvxhINoQkkJzriCZ-OfmLAJ-RSYyqVmQ6IWG0K8l-VtVeFa9H6Z9j1QreCfyBxBXRqwJg';
+    // const secret = 'EGKFytFEyflJKpF-Y7piQXLPDE9r_o9YNCoKDTg6eVYZs9E4YTCeX9Wf92EkoEQHcMq6_yap1VcFPdeY';
+    // const tokenEndpoint = 'https://api.sandbox.paypal.com/v1/oauth2/token';
+    // const data = {
+    //     grant_type: 'client_credentials'
+    // };
+    // const headers = {
+    //     'Content-Type': 'application/x-www-form-urlencoded',
+    //     'Authorization': `Basic ${Buffer.from(`${clientID}:${secret}`).toString('base64')}`
+    // };
+
+    // try {
+    //     const response = await axios.post(tokenEndpoint, new URLSearchParams(data), { headers });
+    //     const accessToken = response.data.access_token;
+    //     console.log(accessToken)
+
+    //     const paymentData = {
+    //         intent: 'sale',
+    //         payer: {
+    //             payment_method: 'paypal'
+    //         },
+    //         redirect_urls: {
+    //             return_url: 'http://localhost:3001/success',
+    //             cancel_url: 'http://localhost:3000/cancel'
+    //         },
+    //         transactions: [{
+    //             item_list: {
+    //                 items: [{
+    //                     name: name || 'Ticket Purchase', // Using name from request
+    //                     price: total, // Already converted to USD
+    //                     currency: currency, // Should be 'USD'
+    //                     quantity: 1
+    //                 }]
+    //             },
+    //             amount: {
+    //                 total: total, // Matches the item list total
+    //                 currency: currency,
+    //             },
+    //             description: 'Description of the payment'
+    //         }]
+    //     };
+
+    //     // const paymentResponse = await axios.post('https://api.sandbox.paypal.com/v1/payments/payment', paymentData, {
+    //     //     headers: {
+    //     //         'Content-Type': 'application/json',
+    //     //         'Authorization': `Bearer ${accessToken}`
+    //     //     }
+    //     // });
+
+    //     const approvalUrl = paymentResponse.data.links.find(link => link.rel === 'approval_url').href;
+    //     paypal.payment.create(paymentData, function (error, payment) {
+    //         if (error) {
+    //           res.render('cancle');
+    //         } else {
+    //             for(let i = 0;i < payment.links.length;i++){
+    //               if(payment.links[i].rel === 'approval_url'){
+    //                 res.redirect(payment.links[i].href);
+    //               }
+    //             }
+    //         }
+    //       });
+    //     console.log(approvalUrl)
+    //     res.json({ approvalUrl: approvalUrl });
+    // } catch (error) {
+    //     console.error('Error creating payment:', error.message);
+    //     res.status(500).send('An error occurred while creating payment');
+    //     console.log('PayPal API response status:', error.response.status); // Log status code của phản hồi lỗi từ PayPal API
+    //     console.log('PayPal API response data:', error.response.data);
+    // }
     const { total, currency, name } = req.body;
-    const clientID = 'ARJRbC7-R6guvxhINoQkkJzriCZ-OfmLAJ-RSYyqVmQ6IWG0K8l-VtVeFa9H6Z9j1QreCfyBxBXRqwJg';
-    const secret = 'EGKFytFEyflJKpF-Y7piQXLPDE9r_o9YNCoKDTg6eVYZs9E4YTCeX9Wf92EkoEQHcMq6_yap1VcFPdeY';
-    const tokenEndpoint = 'https://api.sandbox.paypal.com/v1/oauth2/token';
-    const data = {
-        grant_type: 'client_credentials'
-    };
-    const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${Buffer.from(`${clientID}:${secret}`).toString('base64')}`
-    };
+    console.log('Total:', total, 'Currency:', currency, 'Name:', name)
 
-    try {
-        const response = await axios.post(tokenEndpoint, new URLSearchParams(data), { headers });
-        const accessToken = response.data.access_token;
-        console.log(accessToken)
-
-        const paymentData = {
-            intent: 'sale',
-            payer: {
-                payment_method: 'paypal'
+    const create_payment_json = {
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": "http://localhost:3001/success",
+            "cancel_url": "http://localhost:3000/cancel"
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": name || 'Ticket Purchase',
+                    "price": total,
+                    "currency": currency,
+                    "quantity": 1
+                }]
             },
-            redirect_urls: {
-                return_url: 'https://dc-cinema.vercel.app/success',
-                cancel_url: 'http://localhost:3000/cancel'
+            "amount": {
+                "currency": currency,
+                "total": total
             },
-            transactions: [{
-                item_list: {
-                    items: [{
-                        name: name || 'Ticket Purchase', // Using name from request
-                        price: total, // Already converted to USD
-                        currency: currency, // Should be 'USD'
-                        quantity: 1
-                    }]
-                },
-                amount: {
-                    total: total, // Matches the item list total
-                    currency: currency,
-                },
-                description: 'Description of the payment'
-            }]
-        };
+            "description": "Description of the payment"
+        }]
+    };
 
-        const paymentResponse = await axios.post('https://api.sandbox.paypal.com/v1/payments/payment', paymentData, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
+    paypal.payment.create(create_payment_json, function (error, payment) {
+        if (error) {
+            console.error('Error creating payment:', error);
+            res.status(500).json({ error: 'Error creating payment' });
+        } else {
+            const approvalUrl = payment.links.find(link => link.rel === 'approval_url');
+            if (approvalUrl) {
+                res.json({ approvalUrl: approvalUrl.href });
+                console.log('Approval URL:', approvalUrl.href);
+            } else {
+                res.status(500).json({ error: 'No approval URL found' });
             }
-        });
-
-        const approvalUrl = paymentResponse.data.links.find(link => link.rel === 'approval_url').href;
-        console.log(approvalUrl)
-        res.json({ approvalUrl: approvalUrl });
-    } catch (error) {
-        console.error('Error creating payment:', error.message);
-        res.status(500).send('An error occurred while creating payment');
-        console.log('PayPal API response status:', error.response.status); // Log status code của phản hồi lỗi từ PayPal API
-        console.log('PayPal API response data:', error.response.data);
-    }
+        }
+    });
 });
 
 module.exports = routerAPI
