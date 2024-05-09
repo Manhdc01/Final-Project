@@ -186,7 +186,7 @@ routerAPI.get('/success', (req, res) => {
             res.status(500).send("Payment execution failed");
         } else {
             // Redirect to the React route handling the confirmation
-            res.status(200).send(`https://dc-cinema.onrender.com/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            res.status(200).send(`https://dc-cinema.vercel.app/success?paymentId=${paymentId}&PayerID=${PayerID}`);
         }
     });
 });
