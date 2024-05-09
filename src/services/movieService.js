@@ -24,6 +24,7 @@ const postCreateMovieService = async (dataMovie) => {
         //create movie with ID category
         let result = await Movie.create({
             name: dataMovie.name,
+            description: dataMovie.description,
             poster: dataMovie.poster,
             director: dataMovie.director,
             performer: dataMovie.performer,

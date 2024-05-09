@@ -35,7 +35,7 @@ const getAllMovie = async (req, res) => {
     }
 }
 const postCreateMovie = async (req, res) => {
-    let { name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body;
+    let { name, description, director, performer, category, premiere, time, language, trailerUrl, status } = req.body;
     let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
     let imageUploadResult = {}
     if (!req.files || !req.files.poster) {
@@ -69,7 +69,7 @@ const postCreateMovie = async (req, res) => {
 }
 
 const putupdateMovie = async (req, res) => {
-    let { id, name, director, performer, category, premiere, time, language, trailerUrl, status } = req.body
+    let { id, name,description, director, performer, category, premiere, time, language, trailerUrl, status } = req.body
     let dataMovie = { name, director, performer, category, premiere, time, language, trailerUrl, status }
     const existingMovie = await Movie.findById(id);
     // Initialize userData.image with existing image to retain it if no new image is uploaded.

@@ -6,6 +6,7 @@ const movieSchema = new mongoose.Schema({
     poster: {
         type: String
     },
+    description: { type: String },
     director: { type: String },
     performer: { type: String },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'category' },
