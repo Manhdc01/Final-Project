@@ -106,7 +106,7 @@ const sendResetEmail = async (email) => {
 
         console.log(">>>Token:::", resetToken)
         // Construct reset link
-        const resetLink = `hhttps://dc-cinema.vercel.app/reset-password?token=${resetToken}`;
+        const resetLink = `https://dc-cinema.vercel.app/reset-password?token=${resetToken}`;
 
         // Send reset email
         const transporter = nodemailer.createTransport({
