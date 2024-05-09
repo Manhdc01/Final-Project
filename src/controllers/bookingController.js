@@ -136,33 +136,6 @@ const percentageNorAndVIPSeats = async (req, res) => {
     }
 }
 const revenueByDay = async (req, res) => {
-    // try {
-    //     // Truy vấn tất cả các đặt vé từ cơ sở dữ liệu MongoDB
-    //     const bookings = await Booking.find();
-
-    //     // Tạo một đối tượng để lưu trữ tổng số vé và tổng doanh thu theo từng ngày
-    //     const revenueByDay = {};
-
-    //     // Lặp qua từng đặt vé và tính tổng số vé và tổng doanh thu theo từng ngày
-    //     bookings.forEach(booking => {
-    //         const bookingDate = new Date(booking.timeOfBooking).toISOString().split('T')[0];
-
-    //         // Kiểm tra xem ngày này đã được thêm vào đối tượng revenueByDay chưa
-    //         if (!revenueByDay[bookingDate]) {
-    //             revenueByDay[bookingDate] = { totalTicketsSold: 0, totalRevenue: 0 };
-    //         }
-
-    //         // Đếm số vé bán ra và tính tổng doanh thu
-    //         const seats = booking.seats.split(',').length;
-    //         revenueByDay[bookingDate].totalTicketsSold += seats;
-    //         revenueByDay[bookingDate].totalRevenue += booking.totalPrice;
-    //     });
-
-    //     res.status(200).json({ success: true, data: revenueByDay });
-    // } catch (error) {
-    //     console.error('Error calculating revenue by day:', error);
-    //     res.status(500).json({ error: 'Internal server error' });
-    // }
     try {
         // Truy vấn tất cả các đặt vé từ cơ sở dữ liệu MongoDB
         const bookings = await Booking.find();
@@ -186,9 +159,9 @@ const revenueByDay = async (req, res) => {
             seats.forEach(seatInfo => {
                 const [seatType, seatPrice] = seatInfo.split(':');  // Giả sử mỗi seatInfo có dạng 'VIP:120'
                 if (seatType.includes('VIP')) {
-                    revenueByDay[bookingDate].totalVipRevenue += 70000;
+                    revenueByDay[bookingDate].totalVipRevenue += 8;
                 } else {
-                    revenueByDay[bookingDate].totalNormalRevenue += 50000;
+                    revenueByDay[bookingDate].totalNormalRevenue += 6;
                 }
             });
         });
@@ -269,9 +242,9 @@ const revenueByDayForAdminCinema = async (req, res) => {
                 seats.forEach(seatInfo => {
                     const [seatType, seatPrice] = seatInfo.split(':');  // Giả sử mỗi seatInfo có dạng 'VIP:120'
                     if (seatType.includes('VIP')) {
-                        revenueByDay[formattedDate].totalVipRevenue += 70000;
+                        revenueByDay[formattedDate].totalVipRevenue += 8;
                     } else {
-                        revenueByDay[formattedDate].totalNormalRevenue += 50000;
+                        revenueByDay[formattedDate].totalNormalRevenue += 6;
                     }
                 });
             }
